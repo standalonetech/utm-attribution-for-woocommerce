@@ -23,12 +23,28 @@ class Utm_Attribution_Capture {
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only UTM capture from URL params.
-		if ( empty( $_GET['utm_source'] ) ) {
+		$existing_visit_id = utm_attribution_get_visit_id();
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$has_utm = ! empty( $_GET['utm_source'] );
+
+		/**
+		 * Logic:
+		 * 1. If UTM parameters are present, we ALWAYS record a new visit (new campaign click).
+		 * 2. If no UTMs are present, we only record a visit if the user doesn't already have an active attribution session.
+		 *    This prevents recording every internal page refresh as a 'direct' or 'referral' visit.
+		 */
+		if ( ! $has_utm && $existing_visit_id ) {
 			return;
 		}
 
-		$params   = $this->get_sanitized_params();
+		$params = $this->get_attribution_params();
+
+		// If it's an internal referral and we don't have UTMs, ignore it.
+		if ( ! $has_utm && $this->is_internal_referral() ) {
+			return;
+		}
+
 		$visit_id = $this->store_visit( $params );
 
 		if ( $visit_id ) {
@@ -36,12 +52,120 @@ class Utm_Attribution_Capture {
 		}
 	}
 
-	private function get_sanitized_params() {
+	/**
+	 * Consolidates UTM, Referrer, and Direct traffic logic.
+	 *
+	 * @return array
+	 */
+	private function get_attribution_params() {
+		// 1. Try UTM parameters first.
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ! empty( $_GET['utm_source'] ) ) {
+			return $this->get_sanitized_utm_params();
+		}
+
+		// 2. Try Referrer analysis.
+		$referrer = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( ! empty( $referrer ) ) {
+			return $this->parse_referrer( $referrer );
+		}
+
+		// 3. Fallback to Direct traffic.
+		return array(
+			'utm_source'   => '(direct)',
+			'utm_medium'   => '(none)',
+			'utm_campaign' => '(none)',
+			'utm_term'     => '',
+			'utm_content'  => '',
+			'utm_site_id'  => '',
+		);
+	}
+
+	/**
+	 * Basic referrer parser for Organic and Social sources.
+	 *
+	 * @param string $referrer
+	 * @return array
+	 */
+	private function parse_referrer( $referrer ) {
+		$host = wp_parse_url( $referrer, PHP_URL_HOST );
+		$host = preg_replace( '/^www\./', '', strtolower( $host ) );
+
+		$params = array(
+			'utm_source'   => $host,
+			'utm_medium'   => 'referral',
+			'utm_campaign' => '(none)',
+			'utm_term'     => '',
+			'utm_content'  => '',
+			'utm_site_id'  => '',
+		);
+
+		// Organic Search detection.
+		$organic_map = array(
+			'google.' => 'google',
+			'bing.com' => 'bing',
+			'yahoo.com' => 'yahoo',
+			'duckduckgo.com' => 'duckduckgo',
+			'baidu.com' => 'baidu',
+			'yandex.' => 'yandex',
+		);
+
+		foreach ( $organic_map as $pattern => $source ) {
+			if ( false !== strpos( $host, $pattern ) ) {
+				$params['utm_source'] = $source;
+				$params['utm_medium'] = 'organic';
+				break;
+			}
+		}
+
+		// Social Media detection.
+		$social_map = array(
+			'facebook.com' => 'facebook',
+			'fb.me'        => 'facebook',
+			't.co'         => 'twitter',
+			'twitter.com'  => 'twitter',
+			'x.com'        => 'twitter',
+			'instagram.com' => 'instagram',
+			'linkedin.com' => 'linkedin',
+			'pinterest.'   => 'pinterest',
+			'reddit.com'   => 'reddit',
+			't.me'         => 'telegram',
+		);
+
+		foreach ( $social_map as $pattern => $source ) {
+			if ( false !== strpos( $host, $pattern ) ) {
+				$params['utm_source'] = $source;
+				$params['utm_medium'] = 'social';
+				break;
+			}
+		}
+
+		return $params;
+	}
+
+	/**
+	 * Check if the referrer is from the same domain.
+	 *
+	 * @return bool
+	 */
+	private function is_internal_referral() {
+		$referrer = isset( $_SERVER['HTTP_REFERER'] ) ? esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		if ( empty( $referrer ) ) {
+			return false;
+		}
+
+		$ref_host  = wp_parse_url( $referrer, PHP_URL_HOST );
+		$site_host = wp_parse_url( home_url(), PHP_URL_HOST );
+
+		return $ref_host === $site_host;
+	}
+
+	private function get_sanitized_utm_params() {
 		$keys = array( 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_site_id' );
 
 		$params = array();
 		foreach ( $keys as $key ) {
-			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only UTM params from URL.
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$value          = isset( $_GET[ $key ] ) ? sanitize_text_field( wp_unslash( $_GET[ $key ] ) ) : '';
 			$params[ $key ] = substr( $value, 0, 191 );
 		}

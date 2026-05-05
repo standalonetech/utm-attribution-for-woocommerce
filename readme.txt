@@ -75,6 +75,11 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 
 == Changelog ==
 
+= 1.1.0 =
+* **Feature:** Added Organic and Social media attribution via referrer detection.
+* **Feature:** Added Direct traffic attribution for visitors without UTMs or referrers.
+* **Improvement:** Enhanced capture logic to prevent duplicate visits during the same session.
+
 = 1.0.1 =
 – **Fix:-** Update chart.js to latest version.
 
