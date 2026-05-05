@@ -1,0 +1,181 @@
+# Copyright (C) 2026 StandaloneTech
+# This file is distributed under the same license as the UTM Attribution for WooCommerce plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: UTM Attribution for WooCommerce 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/utm-attribution-for-woocommerce\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-04-22T15:08:59+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: utm-attribution-for-woocommerce\n"
+
+#. Plugin Name of the plugin
+#: utm-attribution-for-woocommerce.php
+msgid "UTM Attribution for WooCommerce"
+msgstr ""
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: utm-attribution-for-woocommerce.php
+msgid "https://standalonetech.com/"
+msgstr ""
+
+#. Description of the plugin
+#: utm-attribution-for-woocommerce.php
+msgid "Captures UTM parameters from inbound URLs, attributes WooCommerce purchases, and shows conversion reports."
+msgstr ""
+
+#. Author of the plugin
+#: utm-attribution-for-woocommerce.php
+msgid "StandaloneTech"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:19
+msgid "Today"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:22
+msgid "Last 7 Days"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:25
+msgid "Last 30 Days"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:28
+msgid "Last 90 Days"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:31
+msgid "This Year"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:42
+msgid "From"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:49
+msgid "To"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:55
+msgid "Apply"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:63
+msgid "Total Visits"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:67
+msgid "Total Conversions"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:71
+msgid "Conversion Rate"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:80
+msgid "Total Revenue"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:86
+msgid "Performance Overview"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:93
+msgid "Top Performing Campaigns"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:97
+msgid "Campaign Name"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:98
+#: includes/class-utm-attribution-admin.php:42
+#: includes/class-utm-attribution-admin.php:43
+#: includes/class-utm-attribution-admin.php:171
+msgid "Visits"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:99
+#: includes/class-utm-attribution-admin.php:51
+#: includes/class-utm-attribution-admin.php:52
+#: includes/class-utm-attribution-admin.php:185
+msgid "Conversions"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:100
+msgid "Conv. Rate"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:101
+msgid "Revenue Generated"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:108
+msgid "(Direct / None)"
+msgstr ""
+
+#: includes/admin/views/dashboard.php:123
+msgid "No campaign data recorded for this period."
+msgstr ""
+
+#: includes/class-utm-attribution-admin.php:22
+#: includes/class-utm-attribution-admin.php:23
+msgid "UTM Attribution"
+msgstr ""
+
+#: includes/class-utm-attribution-admin.php:33
+#: includes/class-utm-attribution-admin.php:34
+msgid "Dashboard"
+msgstr ""
+
+#: includes/class-utm-attribution-conversions-list-table.php:29
+#: includes/class-utm-attribution-visits-list-table.php:29
+msgid "ID"
+msgstr ""
+
+#: includes/class-utm-attribution-conversions-list-table.php:30
+msgid "Visit ID"
+msgstr ""
+
+#: includes/class-utm-attribution-conversions-list-table.php:31
+msgid "Order ID"
+msgstr ""
+
+#: includes/class-utm-attribution-conversions-list-table.php:32
+msgid "Total"
+msgstr ""
+
+#: includes/class-utm-attribution-conversions-list-table.php:33
+msgid "Converted At"
+msgstr ""
+
+#: includes/class-utm-attribution-visits-list-table.php:30
+msgid "Site ID"
+msgstr ""
+
+#: includes/class-utm-attribution-visits-list-table.php:31
+msgid "Source"
+msgstr ""
+
+#: includes/class-utm-attribution-visits-list-table.php:32
+msgid "Medium"
+msgstr ""
+
+#: includes/class-utm-attribution-visits-list-table.php:33
+msgid "Campaign"
+msgstr ""
+
+#: includes/class-utm-attribution-visits-list-table.php:34
+msgid "Landing URL"
+msgstr ""
+
+#: includes/class-utm-attribution-visits-list-table.php:35
+msgid "Visited At"
+msgstr ""
