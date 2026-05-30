@@ -2,13 +2,12 @@
 Contributors: standalonetech
 Tags: utm, attribution, woocommerce, conversions, campaign tracking
 Requires at least: 6.4
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
 Requires Plugins: woocommerce
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Stable tag: 1.2.0
-Donate link: https://donate.stripe.com/fZeaFydax6NNfjWeVc
 
 Capture UTM parameters, attribute WooCommerce purchases to marketing campaigns, and view conversion reports — all inside your WordPress admin.
 
