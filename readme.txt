@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 1.0.1
+Stable tag: 1.2.0
 Donate link: https://donate.stripe.com/fZeaFydax6NNfjWeVc
 
 Capture UTM parameters, attribute WooCommerce purchases to marketing campaigns, and view conversion reports — all inside your WordPress admin.
@@ -74,6 +74,12 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 4. Conversions list showing WooCommerce orders attributed to UTM visits.
 
 == Changelog ==
+
+= 1.2.0 =
+* **Feature:** Added CSV export for Visits, Conversions, and Top Campaigns data.
+* **Improvement:** Export buttons on Visits and Conversions list tables.
+* **Improvement:** Export button on Dashboard Top Campaigns section with date range support.
+* **Security:** CSV exports are protected by nonce verification and capability checks.
 
 = 1.1.0 =
 * **Feature:** Added Organic and Social media attribution via referrer detection.

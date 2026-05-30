@@ -158,7 +158,14 @@ class Utm_Attribution_Admin {
 		$table = new Utm_Attribution_Visits_List_Table();
 		$table->prepare_items();
 
-		echo '<div class="wrap utm-attribution-dashboard"><h2>' . esc_html__( 'Visits', 'utm-attribution-for-woocommerce' ) . '</h2>';
+		$export_url = wp_nonce_url(
+			admin_url( 'admin.php?page=utm-attribution-visits&utm-export=visits' ),
+			'utm_attribution_export'
+		);
+
+		echo '<div class="wrap utm-attribution-dashboard"><h2>' . esc_html__( 'Visits', 'utm-attribution-for-woocommerce' );
+		echo ' <a href="' . esc_url( $export_url ) . '" class="page-title-action">' . esc_html__( 'Export CSV', 'utm-attribution-for-woocommerce' ) . '</a>';
+		echo '</h2>';
 		echo '<form method="get">';
 		echo '<input type="hidden" name="page" value="utm-attribution-visits" />';
 		$table->display();
@@ -169,7 +176,14 @@ class Utm_Attribution_Admin {
 		$table = new Utm_Attribution_Conversions_List_Table();
 		$table->prepare_items();
 
-		echo '<div class="wrap utm-attribution-dashboard"><h2>' . esc_html__( 'Conversions', 'utm-attribution-for-woocommerce' ) . '</h2>';
+		$export_url = wp_nonce_url(
+			admin_url( 'admin.php?page=utm-attribution-conversions&utm-export=conversions' ),
+			'utm_attribution_export'
+		);
+
+		echo '<div class="wrap utm-attribution-dashboard"><h2>' . esc_html__( 'Conversions', 'utm-attribution-for-woocommerce' );
+		echo ' <a href="' . esc_url( $export_url ) . '" class="page-title-action">' . esc_html__( 'Export CSV', 'utm-attribution-for-woocommerce' ) . '</a>';
+		echo '</h2>';
 		echo '<form method="get">';
 		echo '<input type="hidden" name="page" value="utm-attribution-conversions" />';
 		$table->display();

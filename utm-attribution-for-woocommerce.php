@@ -3,7 +3,7 @@
  * Plugin Name: UTM Attribution for WooCommerce
  * Plugin URI: https://standalonetech.com/
  * Description: Captures UTM parameters from inbound URLs, attributes WooCommerce purchases, and shows conversion reports.
- * Version: 1.1.0
+ * Version: 1.2.0
  * Author: StandaloneTech
  * Author URI: https://profiles.wordpress.org/standalonetech/
  * Text Domain: utm-attribution-for-woocommerce

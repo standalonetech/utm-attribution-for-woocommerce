@@ -17,7 +17,7 @@ final class Utm_Attribution {
 	/**
 	 * @var string
 	 */
-	public $version = '1.1.0';
+	public $version = '1.2.0';
 
 	/**
 	 * @var Utm_Attribution
@@ -65,6 +65,7 @@ final class Utm_Attribution {
 		include_once UTM_ATTRIBUTION_ABSPATH . 'includes/class-utm-attribution-capture.php';
 		include_once UTM_ATTRIBUTION_ABSPATH . 'includes/class-utm-attribution-conversion.php';
 		include_once UTM_ATTRIBUTION_ABSPATH . 'includes/class-utm-attribution-reports.php';
+		include_once UTM_ATTRIBUTION_ABSPATH . 'includes/class-utm-attribution-export.php';
 
 		if ( is_admin() ) {
 			include_once UTM_ATTRIBUTION_ABSPATH . 'includes/class-utm-attribution-admin.php';

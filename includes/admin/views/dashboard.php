@@ -93,7 +93,16 @@ $utm_today = gmdate( 'Y-m-d' );
 	</div>
 
 	<div class="utm-attribution-tables">
-		<h3><?php esc_html_e( 'Top Performing Campaigns', 'utm-attribution-for-woocommerce' ); ?></h3>
+		<h3>
+			<?php esc_html_e( 'Top Performing Campaigns', 'utm-attribution-for-woocommerce' ); ?>
+			<?php
+			$export_url = wp_nonce_url(
+				add_query_arg( array( 'utm-export' => 'campaigns', 'from' => $from, 'to' => $to ) ),
+				'utm_attribution_export'
+			);
+			?>
+			<a href="<?php echo esc_url( $export_url ); ?>" class="page-title-action utm-export-campaigns"><?php esc_html_e( 'Export CSV', 'utm-attribution-for-woocommerce' ); ?></a>
+		</h3>
 		<table class="wp-list-table widefat fixed striped">
 			<thead>
 				<tr>

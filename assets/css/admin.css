@@ -202,6 +202,14 @@
     font-weight: 600;
     margin: 0 0 20px 0;
     color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.utm-export-campaigns {
+    font-size: 12px !important;
+    margin-left: auto !important;
 }
 
 .utm-attribution-tables {
