@@ -7,28 +7,46 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 
-Capture UTM parameters, attribute WooCommerce purchases to marketing campaigns, and view conversion reports — all inside your WordPress admin.
+See which campaigns, search engines and social sites bring visitors and WooCommerce sales — tracked in your own database, no third-party service.
 
 == Description ==
 
-**UTM Attribution for WooCommerce** helps you understand exactly which marketing campaigns drive traffic and sales on your WooCommerce store.
+**UTM Attribution for WooCommerce** records how each visitor reached your store and credits their WooCommerce orders to that visit, so you can see visits, conversions and revenue per campaign right in your WordPress admin. Everything is stored in two tables in your own database. No external analytics account, tracking script or CDN is involved.
 
-It automatically captures standard UTM parameters (`utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, `utm_content`) the moment a visitor lands on your site. When that visitor places an order, the plugin attributes the purchase to the original UTM visit so you can see real revenue per campaign — without any third-party analytics service.
+= How visits are recorded =
 
-= Key Features =
+* **UTM-tagged links** — `utm_source`, `utm_medium`, `utm_campaign`, `utm_term` and `utm_content` are saved whenever a visitor lands on a tagged URL.
+* **Untagged traffic** — Visitors without UTM tags are classified from the referrer: **organic** (Google, Bing, Yahoo, DuckDuckGo, Baidu, Yandex), **social** (Facebook, X/Twitter, Instagram, LinkedIn, Pinterest, Reddit, Telegram), **referral** (any other site), or **direct**.
+* **Noise filtered out** — Bots, crawlers, 404 pages, feeds, AJAX and non-GET requests don't create visits, and reloading the same tagged link within 30 minutes doesn't count twice.
+* **Click deduplication** — An optional `utm_site_id` parameter lets you give each link click a unique ID so it is recorded only once.
 
-* **Automatic UTM capture** — Records source, medium, campaign, term, and content on every tagged visit.
-* **WooCommerce order attribution** — Links orders to the visit that drove them using a secure, signed cookie.
-* **Revenue reporting** — See total visits, conversions, conversion rate, and revenue in one dashboard.
-* **Date range filter** — Filter by Today, Last 7 / 30 / 90 Days, This Year, or a custom date range.
-* **Performance chart** — Visualise visits and conversions over time with an interactive Chart.js graph.
-* **Top campaigns table** — Ranked list of campaigns by visits, conversions, and revenue generated.
-* **Visits & Conversions lists** — Paginated admin tables showing every captured visit and attributed order.
-* **Deduplication** — Optional `utm_site_id` parameter prevents the same click being recorded twice.
-* **Privacy-friendly** — IP addresses are SHA-256 hashed before storage; IP hashing can be disabled via filter.
-* **Developer-friendly** — Extensible via WordPress filters (`utm_attribution_user_capability`, `utm_attribution_cookie_lifetime_days`, `utm_attribution_enable_ip_hashing`, etc.).
+= How orders are attributed =
+
+* The visit is remembered in a signed, HttpOnly cookie (30 days by default). A new UTM click replaces it, so the most recent campaign gets the credit (last-touch).
+* At checkout — classic or block checkout — the visit is saved on the order. When the order later reaches **processing** or **completed**, the conversion is recorded, even if that happens through a payment webhook, an admin action or cron.
+* Refunds and cancellations are kept in sync: revenue is net of refunds, and cancelled, refunded or failed orders drop out of the reports.
+* Optional user stitching can credit logged-in customers' orders to their most recent visit within the cookie lifetime.
+
+= Reports =
+
+* **Dashboard** — Total visits, conversions, conversion rate and revenue, a visits-and-conversions chart, and a top campaigns table.
+* **Date ranges** — Today, Last 7 / 30 / 90 days, This Year, or a custom range, all in your site's timezone. Visits are counted by visit date, and conversions and revenue by order date.
+* **Visits and Conversions lists** — Paginated tables of every recorded visit and attributed order, with links to the order.
+* **CSV export** — Visits, conversions and top campaigns, with spreadsheet formula injection blocked.
+* Revenue totals include orders in the store's currency only.
+
+= Privacy =
+
+* IP addresses are never stored. A salted SHA-256 hash is stored instead, or nothing at all if you turn hashing off.
+* Landing URLs keep only the page path and UTM parameters. Other query values, such as order keys or emails, are dropped.
+* Visit data is included in the WordPress **Export Personal Data** and **Erase Personal Data** tools.
+* The IP hash, user agent, referrer and user ID are removed from visits older than 365 days. Campaign totals are kept. The retention period is adjustable.
+
+= Developer friendly =
+
+Filters for the cookie lifetime, which order statuses count as conversions, the user capability, IP hashing, user stitching, capture skipping and data retention, plus actions when the plugin loads and when a conversion is recorded. Compatible with WooCommerce High-Performance Order Storage (HPOS).
 
 == Installation ==
 
@@ -41,11 +59,15 @@ It automatically captures standard UTM parameters (`utm_source`, `utm_medium`, `
 
 = Does this plugin require WooCommerce? =
 
-Yes. Order attribution relies on WooCommerce order status hooks. The UTM capture and visit recording will still work without WooCommerce, but conversion data will not be collected.
+Yes. Orders are attributed through WooCommerce, and the report screens are hidden while WooCommerce is inactive.
 
 = How does the plugin attribute an order to a visit? =
 
-When a visitor arrives via a UTM-tagged URL, the plugin stores the visit ID in a signed, HttpOnly cookie (valid for 30 days by default). When an order reaches "processing" or "completed" status, the plugin reads that cookie and links the order to the original visit.
+The visit ID is stored in a signed, HttpOnly cookie when the visitor lands. At checkout it is also saved on the order. When the order reaches "processing" or "completed", the plugin links it to that visit, even when the status change comes from a payment gateway webhook or an admin.
+
+= Which campaign gets credit if a customer clicks several links? =
+
+The most recent one. Each new UTM-tagged click replaces the visit stored in the cookie.
 
 = Can I change how long the attribution cookie lasts? =
 
@@ -55,9 +77,15 @@ Yes. Use the `utm_attribution_cookie_lifetime_days` filter:
 
 = Are IP addresses stored? =
 
-IP addresses are hashed with SHA-256 (salted with your WordPress auth key) before being stored. Raw IPs are never written to the database. You can disable IP hashing entirely:
+No. A SHA-256 hash of the IP, salted with your site's auth salt, is stored instead. If you don't need it, turn hashing off and no IP data is stored at all:
 
 `add_filter( 'utm_attribution_enable_ip_hashing', '__return_false' );`
+
+= How long is visitor data kept? =
+
+Visits are kept for reporting. Once a visit is 365 days old, its IP hash, user agent, referrer and user ID are removed. Change the period, or return 0 to keep that data:
+
+`add_filter( 'utm_attribution_pii_retention_days', function() { return 90; } );`
 
 = Can I change which order statuses trigger a conversion? =
 
@@ -74,27 +102,28 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 
 == Changelog ==
 
-= 1.3.0 (Unreleased) =
+= 1.3.0 (October 1, 2026) =
 * Security - CSV exports no longer let visitor-supplied UTM values run as spreadsheet formulas.
 * Security - A shared `utm_site_id` link can no longer be used to take over another visitor's visit.
 * New - Visit data is included in the WordPress personal data export and erase tools.
-* New - Personal data (IP hash, user agent, referrer, user ID) is removed from visits older than 365 days. Change with the `utm_attribution_pii_retention_days` filter.
+* New - Personal data on visits older than 365 days is removed daily; change this with the `utm_attribution_pii_retention_days` filter.
 * New - Declared compatible with WooCommerce High-Performance Order Storage (HPOS).
-* New - `utm_attribution_skip_capture` filter to skip visit capture for specific requests.
-* Fix - Orders paid through webhooks (PayPal, bank transfer and others) or completed by an admin are now attributed to the visit.
+* New - `utm_attribution_skip_capture` filter lets developers skip visit capture for specific requests.
+* Fix - Orders paid through webhooks (PayPal, bank transfer and others) or completed by an admin are now attributed to their visit. Past orders are unchanged.
 * Fix - Dashboard counts conversions and revenue by order date, so orders from earlier visits are no longer missing.
 * Fix - Dashboard date ranges and all displayed times now use the site's timezone.
 * Fix - Refunds and cancellations now reduce conversions and revenue.
 * Fix - Revenue totals only include orders in the store currency.
-* Fix - The order status filter now works when added from a theme or another plugin.
+* Fix - The `utm_attribution_conversion_order_statuses` filter now works when added from a theme or a later-loading plugin.
 * Fix - Order links on the Conversions screen open correctly with HPOS enabled.
 * Fix - Visit ID links on the Conversions screen now open that visit.
-* Fix - Search engines and social sites are detected by exact domain, so netflix.com no longer counts as Twitter.
-* Fix - Optional user stitching (`utm_attribution_enable_user_stitching`) now only matches visits from before the order, within the cookie lifetime.
+* Fix - Search engines and social sites are matched by exact domain, so netflix.com no longer counts as Twitter.
+* Fix - Optional user stitching now only matches visits from before the order, within the cookie lifetime.
 * Tweak - Bots, 404 pages, feeds and background requests no longer create visits.
 * Tweak - Reloading the same tagged link no longer creates a duplicate visit.
-* Tweak - Landing URLs only keep the path and UTM parameters, so other query values are no longer stored.
-* Tweak - Database tables are updated automatically after a plugin update.
+* Tweak - Landing URLs keep only the path and UTM parameters; other query values are no longer stored.
+* Tweak - The dashboard now uses the full available screen width.
+* Tweak - Database tables update automatically after a plugin update.
 * Tweak - Report screens are hidden while WooCommerce is inactive.
 
 = 1.2.0 =
@@ -115,6 +144,9 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.3.0 =
+Security: fixes CSV formula injection and visit takeover through shared links. Webhook and admin-completed orders are now attributed, refunds reduce totals, and personal data on visits older than 365 days is removed daily.
 
 = 1.0.0 =
 Initial release.

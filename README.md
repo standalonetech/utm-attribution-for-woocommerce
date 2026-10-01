@@ -1,17 +1,19 @@
 # UTM Attribution for WooCommerce
 
-**UTM Attribution for WooCommerce** is a privacy-first, zero-dependency WordPress plugin that helps you understand which marketing campaigns drive traffic and revenue on your WooCommerce store. It captures standard UTM parameters and attributes orders to the original visit directly within your WordPress database.
+**UTM Attribution for WooCommerce** records how each visitor reached your store — UTM-tagged campaign, search engine, social network, referring site or direct — and credits their WooCommerce orders to that visit. Visits, conversions and revenue per campaign are reported in wp-admin. All data lives in two tables in your own database. There is no third-party service, no front-end tracking script and no CDN, and Chart.js is bundled.
 
 ---
 
 ## 🚀 Key Features
 
-- **Automatic UTM Capture**: Records `utm_source`, `utm_medium`, `utm_campaign`, `utm_term`, and `utm_content`.
-- **Order Attribution**: Links WooCommerce orders to the original UTM visit using a secure, signed cookie.
-- **Revenue Reporting**: Integrated dashboard with KPI cards (Visits, Conversions, Revenue).
-- **Interactive Charts**: Visualize performance trends over time with Chart.js.
-- **Privacy Focused**: IP addresses are SHA-256 hashed (salted) by default. No third-party tracking scripts.
-- **Developer Friendly**: Highly extensible via WordPress filters and actions.
+- **Visit capture**: Saves `utm_source`, `utm_medium`, `utm_campaign`, `utm_term` and `utm_content` from tagged URLs. Untagged traffic is classified from the referrer as organic, social, referral or direct.
+- **Clean data**: Bots, 404 pages, feeds, AJAX and non-GET requests are skipped. Reloading a tagged link within 30 minutes doesn't create a duplicate. An optional `utm_site_id` deduplicates individual clicks.
+- **Last-touch order attribution**: A signed, HttpOnly cookie remembers the visit, and checkout (classic and block) saves it on the order. Conversions are recorded at `processing`/`completed`, even when the status changes through a payment webhook, an admin or cron.
+- **Accurate revenue**: Net of refunds; cancelled, refunded and failed orders are excluded; store currency only.
+- **Reports**: Dashboard with visits, conversions, conversion rate and revenue, a chart and top campaigns. Date presets or a custom range in the site timezone. Paginated Visits and Conversions lists.
+- **CSV export**: Visits, conversions and campaigns, protected against spreadsheet formula injection.
+- **Privacy**: IPs are never stored, only a salted SHA-256 hash or nothing. Landing URLs keep only the path and UTM parameters. The plugin works with the WordPress personal-data export and erase tools, and IP hash, user agent, referrer and user ID are removed after 365 days.
+- **WooCommerce HPOS compatible**, with filters and actions for customization (see below).
 
 ## 🛠 Installation
 
@@ -41,7 +43,7 @@ add_filter( 'utm_attribution_conversion_order_statuses', function() {
 ```
 
 ### Disable IP Hashing
-If you don't need to anonymize visitor IPs (ensure you comply with local privacy laws).
+Stops storing the salted IP hash. No IP data is stored at all; it does not switch to raw IPs.
 ```php
 add_filter( 'utm_attribution_enable_ip_hashing', '__return_false' );
 ```
@@ -89,8 +91,8 @@ add_action( 'utm_attribution_conversion_recorded', function( $conversion_id, $vi
 
 ## 📊 Database Schema
 
-The plugin creates two optimized tables on activation:
-- `{prefix}utm_attribution_visits`: Records all UTM-tagged landings.
+The plugin creates two tables on activation and updates them automatically after plugin updates:
+- `{prefix}utm_attribution_visits`: One row per recorded visit (UTM, organic, social, referral or direct).
 - `{prefix}utm_attribution_conversions`: Records orders linked to visits.
 
 ## ⚖️ License
