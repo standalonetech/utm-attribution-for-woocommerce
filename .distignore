@@ -1,0 +1,28 @@
+# .distignore — paths excluded when packaging for the WordPress.org plugin SVN repo.
+# Used by /build-dist: `rsync -a --exclude-from=.distignore ./ dist/`.
+# Everything NOT listed here ships (utm-attribution-for-woocommerce.php, includes/, assets/,
+# languages/, readme.txt, uninstall.php, LICENSE).
+
+# Dev tooling
+/bin/
+/vendor/
+/node_modules/
+phpcs.xml.dist
+
+# VCS / AI / project meta
+/.git/
+/.github/
+/.claude/
+/.codex/
+/.agents/
+.gitignore
+.distignore
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+
+# Repo docs (readme.txt is the canonical user-facing doc on WordPress.org)
+README.md
+
+# Packaging output itself
+/dist/

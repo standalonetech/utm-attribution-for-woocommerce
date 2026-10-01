@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<ruleset name="UTM Attribution for WooCommerce">
+	<description>
+		High-signal PHPCS ruleset. Deliberately NOT the full "WordPress" standard: it starts
+		with the sniffs that catch defects (security, SQL, i18n, PHP-version portability) and
+		leaves pure style for later. Widen via the PHASE 2 block once this run is clean.
+	</description>
+
+	<file>.</file>
+
+	<exclude-pattern>/vendor/</exclude-pattern>
+	<exclude-pattern>/node_modules/</exclude-pattern>
+	<exclude-pattern>/dist/</exclude-pattern>
+	<exclude-pattern>/languages/</exclude-pattern>
+	<exclude-pattern>/assets/js/chart.min.js</exclude-pattern>
+
+	<arg name="extensions" value="php"/>
+	<arg name="basepath" value="."/>
+	<arg value="ps"/>
+	<arg name="parallel" value="8"/>
+
+	<!-- PHP floor declared in readme.txt. -->
+	<config name="testVersion" value="7.4-"/>
+	<rule ref="PHPCompatibilityWP"/>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="utm-attribution-for-woocommerce"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- SQL injection: $wpdb->prepare() usage, placeholder correctness, esc_like. -->
+	<rule ref="WordPress.DB.PreparedSQL"/>
+	<rule ref="WordPress.DB.PreparedSQLPlaceholders"/>
+
+	<!-- Output escaping, input sanitization, nonce verification. -->
+	<rule ref="WordPress.Security"/>
+
+	<rule ref="WordPress.PHP.DiscouragedPHPFunctions"/>
+	<rule ref="WordPress.WP.DeprecatedFunctions"/>
+	<rule ref="WordPress.WP.DeprecatedParameters"/>
+	<rule ref="WordPress.WP.AlternativeFunctions"/>
+
+	<rule ref="Generic.PHP.Syntax"/>
+
+	<!--
+		PHASE 2 — uncomment when the above is clean:
+
+		<rule ref="WordPress-Extra">
+			<exclude name="Generic.Commenting.DocComment.MissingShort"/>
+			<exclude name="Squiz.Commenting.FileComment.Missing"/>
+		</rule>
+		<rule ref="WordPress-Docs"/>
+	-->
+</ruleset>
