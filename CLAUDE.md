@@ -11,7 +11,8 @@ The plugin lives inside a live local WordPress install at `/var/www/html/terawal
 ## Commands
 
 ```bash
-# Lint (WordPress Coding Standards installed globally; ruleset in phpcs.xml.dist, currently 0 errors)
+# Lint (WordPress Coding Standards installed globally; ruleset in phpcs.xml.dist, currently 0 errors).
+# phpcs passing does NOT mean Plugin Check passes: its bundled WPCS flags more (e.g. fwrite/fclose). Run both.
 ~/.config/composer/vendor/bin/phpcs --standard=phpcs.xml.dist .
 ~/.config/composer/vendor/bin/phpcbf --standard=phpcs.xml.dist <file>   # autofix
 

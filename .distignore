@@ -26,3 +26,11 @@ README.md
 
 # Packaging output itself
 /dist/
+
+# Untracked junk — rsync copies the working tree, not git's index
+.DS_Store
+._*
+*.log
+*.swp
+*~
+.phpunit.result.cache

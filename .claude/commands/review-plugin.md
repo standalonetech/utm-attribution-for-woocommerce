@@ -39,7 +39,7 @@ default.
 |---|---|
 | `class-utm-attribution-admin.php`, `*-list-table.php`, `includes/admin/views/**`, `class-utm-attribution-export.php`, `assets/js/admin.js`, `includes/helpers/utm-attribution-functions.php` (cookie/IP), any `$wpdb` call, any `$_GET` / `$_POST` / `$_COOKIE` / `$_SERVER` read, any capability / nonce change | `security-auditor` |
 | `class-utm-attribution-capture.php`, `class-utm-attribution-conversion.php`, `class-utm-attribution-reports.php`, `class-utm-attribution-install.php`, `uninstall.php`, any `woocommerce_*` hook, any added/changed `utm_attribution_*` filter or action, option keys, table schema | `attribution-auditor` |
-| only CSS, `readme.txt`, `README.md`, `CLAUDE.md` | **none** — review it yourself against `CLAUDE.md` |
+| only CSS, `readme.txt`, `README.md`, `CLAUDE.md`, or dev tooling (`.claude/**`, `bin/**`, `phpcs.xml.dist`, `.distignore`, `.gitignore`) | **none** — review it yourself against `CLAUDE.md` |
 
 Routes overlap on purpose: a change to Reports SQL dispatches both.
 
