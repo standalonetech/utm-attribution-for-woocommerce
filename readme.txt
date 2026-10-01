@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 1.2.0
+Stable tag: 1.3.0
 
 Capture UTM parameters, attribute WooCommerce purchases to marketing campaigns, and view conversion reports — all inside your WordPress admin.
 
@@ -115,6 +115,9 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.3.0 =
+Development in progress.
 
 = 1.0.0 =
 Initial release.
