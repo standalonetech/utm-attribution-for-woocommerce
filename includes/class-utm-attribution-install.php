@@ -28,6 +28,16 @@ class Utm_Attribution_Install {
 	}
 
 	/**
+	 * Re-run install when the stored DB version is behind the code. Updates never fire the
+	 * activation hook, so this is what applies get_schema() changes on existing sites.
+	 */
+	public static function maybe_upgrade() {
+		if ( get_option( 'utm_attribution_db_version' ) !== UTM_ATTRIBUTION_VERSION ) {
+			self::install();
+		}
+	}
+
+	/**
 	 * Create DB tables.
 	 */
 	private static function create_tables() {

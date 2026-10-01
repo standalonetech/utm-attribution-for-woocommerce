@@ -69,11 +69,11 @@ class Utm_Attribution_Conversions_List_Table extends WP_List_Table {
 			case 'visit_id':
 				return '<a href="' . esc_url( admin_url( 'admin.php?page=utm-attribution-visits&id=' . absint( $item[ $column_name ] ) ) ) . '">' . esc_html( $item[ $column_name ] ) . '</a>';
 			case 'order_id':
-				return '<a href="' . esc_url( admin_url( 'post.php?post=' . absint( $item[ $column_name ] ) . '&action=edit' ) ) . '">' . esc_html( $item[ $column_name ] ) . '</a>';
+				return '<a href="' . esc_url( \Automattic\WooCommerce\Utilities\OrderUtil::get_order_admin_edit_url( absint( $item[ $column_name ] ) ) ) . '">' . esc_html( $item[ $column_name ] ) . '</a>';
 			case 'order_total':
 				return wp_kses_post( wc_price( $item[ $column_name ], array( 'currency' => $item['currency'] ) ) );
 			case 'converted_at':
-				return esc_html( date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $item[ $column_name ] ) ) );
+				return esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $item[ $column_name ] . ' UTC' ) ) );
 			default:
 				return esc_html( $item[ $column_name ] );
 		}

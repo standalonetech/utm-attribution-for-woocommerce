@@ -141,7 +141,7 @@ class Utm_Attribution_Export {
 
 		if ( ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $from ) || ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $to ) ) {
 			$today = current_time( 'Y-m-d' );
-			$from  = gmdate( 'Y-m-d', strtotime( '-29 days' ) );
+			$from  = wp_date( 'Y-m-d', strtotime( '-29 days' ) );
 			$to    = $today;
 		}
 
@@ -180,7 +180,7 @@ class Utm_Attribution_Export {
 		if ( empty( $datetime ) ) {
 			return '';
 		}
-		return date_i18n( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $datetime ) );
+		return wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $datetime . ' UTC' ) );
 	}
 
 	/**
@@ -200,19 +200,33 @@ class Utm_Attribution_Export {
 		header( 'Pragma: no-cache' );
 		header( 'Expires: 0' );
 
-		$output = fopen( 'php://output', 'w' );
-
 		// UTF-8 BOM for Excel compatibility.
-		fwrite( $output, "\xEF\xBB\xBF" );
+		echo "\xEF\xBB\xBF";
+
+		$output = fopen( 'php://output', 'w' );
 
 		fputcsv( $output, $headers );
 
 		foreach ( $rows as $row ) {
-			fputcsv( $output, $row );
+			fputcsv( $output, array_map( array( $this, 'escape_csv_cell' ), $row ) );
 		}
 
-		fclose( $output );
+		// ponytail: no fclose(), exit releases the php://output handle.
 		exit;
+	}
+
+	/**
+	 * Neutralise spreadsheet formulas in visitor-controlled cells (CSV injection).
+	 * Numbers, including negatives, pass through untouched.
+	 *
+	 * @param mixed $value Cell value.
+	 * @return mixed
+	 */
+	private function escape_csv_cell( $value ) {
+		if ( is_string( $value ) && ! is_numeric( $value ) && preg_match( '/^[=+\-@\t\r]/', $value ) ) {
+			return "'" . $value;
+		}
+		return $value;
 	}
 }
 

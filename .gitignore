@@ -15,3 +15,15 @@ node_modules/
 vendor/
 .phpunit.result.cache
 *.log
+
+# WordPress.org SVN packaging output
+/dist/
+
+# Claude/AI
+# The shared agentic architecture (CLAUDE.md, .claude/{agents,commands,settings.json}) IS
+# version-controlled — it is project infrastructure. Only per-developer and agent-generated
+# state is ignored.
+.claude/agent-memory/
+.claude/settings.local.json
+.claude/.scratch/
+.agents/

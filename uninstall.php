@@ -17,4 +17,4 @@ $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}utm_attribution_conversions" 
 // phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching,WordPress.DB.DirectDatabaseQuery.SchemaChange
 
 delete_option( 'utm_attribution_db_version' );
-delete_option( 'utm_attribution_conversion_order_statuses' );
+wp_clear_scheduled_hook( 'utm_attribution_purge_pii' );
