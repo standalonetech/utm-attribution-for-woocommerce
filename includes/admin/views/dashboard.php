@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template file, variables scoped from dashboard_page().
 
-$utm_today = gmdate( 'Y-m-d' );
+$utm_today = current_time( 'Y-m-d' );
 ?>
 <div class="wrap utm-attribution-dashboard">
 	<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>

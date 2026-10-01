@@ -54,6 +54,39 @@ add_filter( 'utm_attribution_user_capability', function() {
 } );
 ```
 
+### Attribute Orders Without a Cookie
+When an order has no visit cookie or stored visit, fall back to the customer's most recent visit while logged in, within the cookie lifetime before the order was placed.
+```php
+add_filter( 'utm_attribution_enable_user_stitching', '__return_true' );
+```
+
+### Skip Capture for Certain Requests
+Bots, non-GET requests, `wc-ajax`, 404s and feeds are skipped by default.
+```php
+add_filter( 'utm_attribution_skip_capture', function( $skip, $user_agent ) {
+    return $skip || false !== stripos( $user_agent, 'MyMonitor' );
+}, 10, 2 );
+```
+
+### Personal Data Retention
+Visits older than 365 days have their IP hash, user agent, referrer and user ID removed daily. Campaign totals are kept. Return `0` to keep it indefinitely.
+```php
+add_filter( 'utm_attribution_pii_retention_days', function() {
+    return 90;
+} );
+```
+
+### Actions
+```php
+// Fires once the plugin has loaded all its classes.
+add_action( 'utm_attribution_loaded', function() {} );
+
+// Fires after an order is recorded as a conversion.
+add_action( 'utm_attribution_conversion_recorded', function( $conversion_id, $visit_id, $order ) {
+    // e.g. push to your CRM.
+}, 10, 3 );
+```
+
 ## 📊 Database Schema
 
 The plugin creates two optimized tables on activation:

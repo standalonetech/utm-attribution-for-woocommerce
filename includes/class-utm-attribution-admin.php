@@ -20,6 +20,11 @@ class Utm_Attribution_Admin {
 	}
 
 	public function admin_menu() {
+		// Report screens call wc_price(); "Requires Plugins" is not enforced below WP 6.5.
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return;
+		}
+
 		$capability = apply_filters( 'utm_attribution_user_capability', 'manage_options' );
 
 		add_menu_page(
@@ -126,14 +131,14 @@ class Utm_Attribution_Admin {
 			case 'today':
 				return array( $today, $today );
 			case '7d':
-				return array( gmdate( 'Y-m-d', strtotime( '-6 days' ) ), $today );
+				return array( wp_date( 'Y-m-d', strtotime( '-6 days' ) ), $today );
 			case '90d':
-				return array( gmdate( 'Y-m-d', strtotime( '-89 days' ) ), $today );
+				return array( wp_date( 'Y-m-d', strtotime( '-89 days' ) ), $today );
 			case 'year':
-				return array( gmdate( 'Y-01-01' ), $today );
+				return array( wp_date( 'Y-01-01' ), $today );
 			case '30d':
 			default:
-				return array( gmdate( 'Y-m-d', strtotime( '-29 days' ) ), $today );
+				return array( wp_date( 'Y-m-d', strtotime( '-29 days' ) ), $today );
 		}
 	}
 

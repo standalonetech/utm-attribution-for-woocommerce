@@ -2,7 +2,7 @@
 Contributors: standalonetech
 Tags: utm, attribution, woocommerce, conversions, campaign tracking
 Requires at least: 6.4
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
 Requires Plugins: woocommerce
 License: GPLv2 or later
@@ -73,6 +73,29 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 4. Conversions list showing WooCommerce orders attributed to UTM visits.
 
 == Changelog ==
+
+= 1.3.0 (Unreleased) =
+* Security - CSV exports no longer let visitor-supplied UTM values run as spreadsheet formulas.
+* Security - A shared `utm_site_id` link can no longer be used to take over another visitor's visit.
+* New - Visit data is included in the WordPress personal data export and erase tools.
+* New - Personal data (IP hash, user agent, referrer, user ID) is removed from visits older than 365 days. Change with the `utm_attribution_pii_retention_days` filter.
+* New - Declared compatible with WooCommerce High-Performance Order Storage (HPOS).
+* New - `utm_attribution_skip_capture` filter to skip visit capture for specific requests.
+* Fix - Orders paid through webhooks (PayPal, bank transfer and others) or completed by an admin are now attributed to the visit.
+* Fix - Dashboard counts conversions and revenue by order date, so orders from earlier visits are no longer missing.
+* Fix - Dashboard date ranges and all displayed times now use the site's timezone.
+* Fix - Refunds and cancellations now reduce conversions and revenue.
+* Fix - Revenue totals only include orders in the store currency.
+* Fix - The order status filter now works when added from a theme or another plugin.
+* Fix - Order links on the Conversions screen open correctly with HPOS enabled.
+* Fix - Visit ID links on the Conversions screen now open that visit.
+* Fix - Search engines and social sites are detected by exact domain, so netflix.com no longer counts as Twitter.
+* Fix - Optional user stitching (`utm_attribution_enable_user_stitching`) now only matches visits from before the order, within the cookie lifetime.
+* Tweak - Bots, 404 pages, feeds and background requests no longer create visits.
+* Tweak - Reloading the same tagged link no longer creates a duplicate visit.
+* Tweak - Landing URLs only keep the path and UTM parameters, so other query values are no longer stored.
+* Tweak - Database tables are updated automatically after a plugin update.
+* Tweak - Report screens are hidden while WooCommerce is inactive.
 
 = 1.2.0 =
 * **Feature:** Added CSV export for Visits, Conversions, and Top Campaigns data.
