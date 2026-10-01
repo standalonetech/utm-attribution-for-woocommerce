@@ -102,27 +102,28 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 
 == Changelog ==
 
-= 1.3.0 (Unreleased) =
+= 1.3.0 (October 1, 2026) =
 * Security - CSV exports no longer let visitor-supplied UTM values run as spreadsheet formulas.
 * Security - A shared `utm_site_id` link can no longer be used to take over another visitor's visit.
 * New - Visit data is included in the WordPress personal data export and erase tools.
-* New - Personal data (IP hash, user agent, referrer, user ID) is removed from visits older than 365 days. Change with the `utm_attribution_pii_retention_days` filter.
+* New - Personal data on visits older than 365 days is removed daily; change this with the `utm_attribution_pii_retention_days` filter.
 * New - Declared compatible with WooCommerce High-Performance Order Storage (HPOS).
-* New - `utm_attribution_skip_capture` filter to skip visit capture for specific requests.
-* Fix - Orders paid through webhooks (PayPal, bank transfer and others) or completed by an admin are now attributed to the visit.
+* New - `utm_attribution_skip_capture` filter lets developers skip visit capture for specific requests.
+* Fix - Orders paid through webhooks (PayPal, bank transfer and others) or completed by an admin are now attributed to their visit. Past orders are unchanged.
 * Fix - Dashboard counts conversions and revenue by order date, so orders from earlier visits are no longer missing.
 * Fix - Dashboard date ranges and all displayed times now use the site's timezone.
 * Fix - Refunds and cancellations now reduce conversions and revenue.
 * Fix - Revenue totals only include orders in the store currency.
-* Fix - The order status filter now works when added from a theme or another plugin.
+* Fix - The `utm_attribution_conversion_order_statuses` filter now works when added from a theme or a later-loading plugin.
 * Fix - Order links on the Conversions screen open correctly with HPOS enabled.
 * Fix - Visit ID links on the Conversions screen now open that visit.
-* Fix - Search engines and social sites are detected by exact domain, so netflix.com no longer counts as Twitter.
-* Fix - Optional user stitching (`utm_attribution_enable_user_stitching`) now only matches visits from before the order, within the cookie lifetime.
+* Fix - Search engines and social sites are matched by exact domain, so netflix.com no longer counts as Twitter.
+* Fix - Optional user stitching now only matches visits from before the order, within the cookie lifetime.
 * Tweak - Bots, 404 pages, feeds and background requests no longer create visits.
 * Tweak - Reloading the same tagged link no longer creates a duplicate visit.
-* Tweak - Landing URLs only keep the path and UTM parameters, so other query values are no longer stored.
-* Tweak - Database tables are updated automatically after a plugin update.
+* Tweak - Landing URLs keep only the path and UTM parameters; other query values are no longer stored.
+* Tweak - The dashboard now uses the full available screen width.
+* Tweak - Database tables update automatically after a plugin update.
 * Tweak - Report screens are hidden while WooCommerce is inactive.
 
 = 1.2.0 =
@@ -145,7 +146,7 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 == Upgrade Notice ==
 
 = 1.3.0 =
-Security and accuracy release: fixes CSV formula injection and now attributes webhook and admin-completed orders. Refunds and cancellations reduce totals, and reports use your site timezone. Visitor data older than 365 days is now anonymized daily (filter: utm_attribution_pii_retention_days).
+Security: fixes CSV formula injection and visit takeover through shared links. Webhook and admin-completed orders are now attributed, refunds reduce totals, and personal data on visits older than 365 days is removed daily.
 
 = 1.0.0 =
 Initial release.
