@@ -23,6 +23,7 @@ GEMINI.md
 
 # Repo docs (readme.txt is the canonical user-facing doc on WordPress.org)
 README.md
+/docs/
 
 # Packaging output itself
 /dist/

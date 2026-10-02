@@ -72,6 +72,7 @@ final class Utm_Attribution {
 			include_once UTM_ATTRIBUTION_ABSPATH . 'includes/class-utm-attribution-admin.php';
 			include_once UTM_ATTRIBUTION_ABSPATH . 'includes/class-utm-attribution-visits-list-table.php';
 			include_once UTM_ATTRIBUTION_ABSPATH . 'includes/class-utm-attribution-conversions-list-table.php';
+			include_once UTM_ATTRIBUTION_ABSPATH . 'includes/class-utm-attribution-settings.php';
 		}
 	}
 

@@ -14,6 +14,18 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class Utm_Attribution_Capture {
 
+	/**
+	 * Window for treating the same tags, or the same cookieless browser, as one visit (GA's session default).
+	 */
+	const REPEAT_WINDOW = 30 * MINUTE_IN_SECONDS;
+
+	/**
+	 * Compiled classifier regexes, keyed by type.
+	 *
+	 * @var array
+	 */
+	private static $patterns = array();
+
 	public function __construct() {
 		add_action( 'wp', array( $this, 'maybe_capture' ), 1 );
 	}
@@ -50,6 +62,11 @@ class Utm_Attribution_Capture {
 			return;
 		}
 
+		// A client that never returns the cookie (monitor, scraper) would otherwise log a visit per request.
+		if ( ! $has_utm && $this->is_cookieless_repeat( $params ) ) {
+			return;
+		}
+
 		$visit_id = $this->store_visit( $params );
 
 		if ( $visit_id ) {
@@ -67,7 +84,6 @@ class Utm_Attribution_Capture {
 	private function is_recent_same_visit( $visit_id, $params ) {
 		global $wpdb;
 
-		// ponytail: fixed 30-minute window (GA's session default); make it a filter if anyone asks.
 		return (bool) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 			$wpdb->prepare(
 				"SELECT id FROM {$wpdb->prefix}utm_attribution_visits
@@ -78,23 +94,68 @@ class Utm_Attribution_Capture {
 				$params['utm_campaign'],
 				$params['utm_term'],
 				$params['utm_content'],
-				gmdate( 'Y-m-d H:i:s', time() - 30 * MINUTE_IN_SECONDS )
+				gmdate( 'Y-m-d H:i:s', time() - self::REPEAT_WINDOW )
 			)
 		);
 	}
 
 	/**
-	 * Requests that are not a person landing on a page: bots, non-GET, wc-ajax, 404s, feeds.
+	 * Whether this browser (IP hash + User-Agent) already logged a visit from the same source within the window.
+	 * No cookie is handed out on a match: behind carrier NAT it may be a different person. The source must
+	 * match too, so another visitor arriving from a different source is still recorded.
+	 *
+	 * @param array $params Sanitized attribution params of this request.
+	 * @return bool
+	 */
+	private function is_cookieless_repeat( $params ) {
+		global $wpdb;
+
+		if ( ! utm_attribution_get_settings( 'merge_repeat_visits' ) ) {
+			return false;
+		}
+
+		$ip_hash = utm_attribution_get_ip_hash();
+		if ( null === $ip_hash ) {
+			return false;
+		}
+
+		// Same truncation as store_visit(), so the stored value matches.
+		$ua = isset( $_SERVER['HTTP_USER_AGENT'] ) ? substr( sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ), 0, 500 ) : '';
+
+		return (bool) $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+			$wpdb->prepare(
+				"SELECT id FROM {$wpdb->prefix}utm_attribution_visits WHERE ip_hash = %s AND visited_at >= %s AND user_agent = %s AND utm_source = %s AND utm_medium <=> %s LIMIT 1",
+				$ip_hash,
+				gmdate( 'Y-m-d H:i:s', time() - self::REPEAT_WINDOW ),
+				$ua,
+				$params['utm_source'],
+				$params['utm_medium']
+			)
+		);
+	}
+
+	/**
+	 * Requests that are not a person landing on a page: bots, monitors, staff, non-page URLs, non-GET, wc-ajax, 404s, feeds.
 	 *
 	 * @return bool
 	 */
 	private function is_noise_request() {
-		$method = isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) : 'GET';
-		$ua     = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+		$method  = isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) : 'GET';
+		$ua      = isset( $_SERVER['HTTP_USER_AGENT'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) ) : '';
+		$path    = isset( $_SERVER['REQUEST_URI'] ) ? (string) wp_parse_url( sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ) ), PHP_URL_PATH ) : '';
+		$purpose = '';
+		foreach ( array( 'HTTP_SEC_PURPOSE', 'HTTP_PURPOSE' ) as $header ) {
+			if ( isset( $_SERVER[ $header ] ) ) {
+				$purpose .= sanitize_text_field( wp_unslash( $_SERVER[ $header ] ) );
+			}
+		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$noise = 'GET' !== $method || isset( $_GET['wc-ajax'] ) || is_404() || is_feed() || is_robots() || is_trackback()
-			|| '' === $ua || (bool) preg_match( '/bot|crawl|spider|slurp|preview|headless|lighthouse|curl|wget|python-|go-http|facebookexternalhit/i', $ua );
+			|| ( utm_attribution_get_settings( 'exclude_non_page' ) && ( is_favicon() || self::is_noise_path( $path ) ) )
+			|| '' !== self::classify_user_agent( $ua )
+			|| ( utm_attribution_get_settings( 'ignore_prefetch' ) && false !== stripos( $purpose, 'prefetch' ) )
+			|| self::is_excluded_user( get_current_user_id() );
 
 		/**
 		 * Filters whether the current request is skipped by visit capture.
@@ -103,6 +164,165 @@ class Utm_Attribution_Capture {
 		 * @param string $ua    Sanitized User-Agent.
 		 */
 		return (bool) apply_filters( 'utm_attribution_skip_capture', $noise, $ua );
+	}
+
+	/**
+	 * Classify a User-Agent. Shared by live capture and the noise cleanup.
+	 *
+	 * @param string|null $ua User-Agent; null means anonymised (kept).
+	 * @return string 'monitor', 'bot' or '' for a likely person.
+	 */
+	public static function classify_user_agent( $ua ) {
+		if ( null === $ua || ! utm_attribution_get_settings( 'exclude_bots' ) ) {
+			return '';
+		}
+
+		if ( '' === $ua ) {
+			return 'bot';
+		}
+
+		if ( self::matches( 'monitor', $ua ) ) {
+			return 'monitor';
+		}
+
+		return self::matches( 'bot', $ua ) ? 'bot' : '';
+	}
+
+	/**
+	 * Whether a URL path is never a page a person lands on (sitemaps, /.well-known/, robots.txt, feeds).
+	 *
+	 * @param string $path URL path.
+	 * @return bool
+	 */
+	public static function is_noise_path( $path ) {
+		return utm_attribution_get_settings( 'exclude_non_page' ) && self::matches( 'path', (string) $path );
+	}
+
+	/**
+	 * Whether a logged-in user is shop staff whose browsing should not count as visits.
+	 *
+	 * @param int $user_id User ID.
+	 * @return bool
+	 */
+	public static function is_excluded_user( $user_id ) {
+		$user_id = (int) $user_id;
+		if ( ! $user_id ) {
+			return false;
+		}
+
+		$exclude = utm_attribution_get_settings( 'exclude_staff' ) && user_can( $user_id, 'manage_woocommerce' );
+
+		/**
+		 * Filters whether a logged-in user's visits are skipped.
+		 *
+		 * @param bool $exclude True to skip. Default: user can manage_woocommerce and staff exclusion is on.
+		 * @param int  $user_id User ID.
+		 */
+		return (bool) apply_filters( 'utm_attribution_exclude_user', $exclude, $user_id );
+	}
+
+	/**
+	 * Whether a host is the site itself (exact, as in 1.3.0) or a listed internal domain or its subdomain.
+	 * Subdomains of the site are not assumed internal: a blog or newsletter subdomain can be a real traffic source.
+	 *
+	 * @param string $host Host name.
+	 * @return bool
+	 */
+	public static function is_internal_host( $host ) {
+		$host = preg_replace( '/^www\./', '', strtolower( (string) $host ) );
+		if ( '' === $host ) {
+			return false;
+		}
+
+		$site_host = preg_replace( '/^www\./', '', strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ) );
+		if ( $host === $site_host ) {
+			return true;
+		}
+
+		/**
+		 * Filters the domains whose links count as internal (their subdomains too).
+		 *
+		 * @param string[] $domains Domains entered in Settings.
+		 */
+		$domains = (array) apply_filters( 'utm_attribution_internal_domains', (array) utm_attribution_get_settings( 'internal_domains' ) );
+
+		foreach ( $domains as $domain ) {
+			$domain = strtolower( (string) $domain );
+			if ( '' !== $domain && '.' !== substr( $domain, -1 ) && self::host_matches( $host, $domain ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Match a subject against a compiled classifier regex. A broken filtered pattern fails open.
+	 *
+	 * @param string $type    'monitor', 'bot' or 'path'.
+	 * @param string $subject User-Agent or path.
+	 * @return bool
+	 */
+	private static function matches( $type, $subject ) {
+		if ( ! isset( self::$patterns[ $type ] ) ) {
+			self::$patterns[ $type ] = self::compile( $type );
+		}
+
+		return '' !== self::$patterns[ $type ] && 1 === preg_match( self::$patterns[ $type ], $subject );
+	}
+
+	/**
+	 * Build one case-insensitive regex from the built-in fragments, admin entries and filters.
+	 *
+	 * @param string $type 'monitor', 'bot' or 'path'.
+	 * @return string Regex, or '' when there is nothing to match.
+	 */
+	private static function compile( $type ) {
+		$quote = function ( $value ) {
+			return preg_quote( (string) $value, '#' );
+		};
+		// Admin paths match the start of the path, after the subdirectory of a subdirectory install.
+		$quote_path = function ( $value ) use ( $quote ) {
+			return '^' . $quote( untrailingslashit( (string) wp_parse_url( home_url(), PHP_URL_PATH ) ) ) . $quote( $value );
+		};
+
+		if ( 'monitor' === $type ) {
+			$fragments = array( 'jetmon', 'uptime', 'pingdom', 'statuscake', 'site24x7' );
+		} elseif ( 'bot' === $type ) {
+			$fragments = array_merge(
+				// 1.3.0 set, kept verbatim.
+				array( 'bot', 'crawl', 'spider', 'slurp', 'preview', 'headless', 'lighthouse', 'curl', 'wget', 'python-', 'go-http', 'facebookexternalhit' ),
+				// Fetchers without "bot" in the name, HTTP libraries, link previews, loopbacks.
+				array( 'mediapartners-google', 'googleother', 'google-', 'nexus 5x build/mmb29p', 'scrapy', 'okhttp', 'axios', 'node-fetch', 'undici', '^node$', '^java/', 'apache-httpclient', 'python/', 'aiohttp', 'httpx', 'guzzlehttp', 'libwww', '^whatsapp/', '^wordpress/', 'meta-external' ),
+				array( 'geedoshop', 'terracotta', '^mozilla/5\.0$', 'cms-checker', 'privacy preserving prefetch proxy' ),
+				array_map( $quote, (array) utm_attribution_get_settings( 'extra_bot_patterns' ) )
+			);
+
+			/**
+			 * Filters the User-Agent fragments treated as bots. Fragments are case-insensitive
+			 * regex pieces joined with "|" inside "#…#i", so escape any "#".
+			 *
+			 * @param string[] $fragments Regex fragments.
+			 */
+			$fragments = apply_filters( 'utm_attribution_bot_ua_patterns', $fragments );
+		} else {
+			$fragments = array_merge(
+				array( '/\.well-known/', 'sitemap[^/]*\.xml(?:\.gz)?$', '\.(?:txt|xml|json|ico|webmanifest)$', '/feed/?$' ),
+				array_map( $quote_path, (array) utm_attribution_get_settings( 'extra_noise_paths' ) )
+			);
+
+			/**
+			 * Filters the URL path fragments that never count as a landing page. Same format as
+			 * utm_attribution_bot_ua_patterns, matched against the path only.
+			 *
+			 * @param string[] $fragments Regex fragments.
+			 */
+			$fragments = apply_filters( 'utm_attribution_noise_path_patterns', $fragments );
+		}
+
+		$fragments = array_filter( array_map( 'strval', (array) $fragments ), 'strlen' );
+
+		return $fragments ? '#(?:' . implode( '|', $fragments ) . ')#i' : '';
 	}
 
 	/**
@@ -164,7 +384,7 @@ class Utm_Attribution_Capture {
 		);
 
 		foreach ( $organic_map as $pattern => $source ) {
-			if ( $this->host_matches( $host, $pattern ) ) {
+			if ( self::host_matches( $host, $pattern ) ) {
 				$params['utm_source'] = $source;
 				$params['utm_medium'] = 'organic';
 				break;
@@ -186,7 +406,7 @@ class Utm_Attribution_Capture {
 		);
 
 		foreach ( $social_map as $pattern => $source ) {
-			if ( $this->host_matches( $host, $pattern ) ) {
+			if ( self::host_matches( $host, $pattern ) ) {
 				$params['utm_source'] = $source;
 				$params['utm_medium'] = 'social';
 				break;
@@ -204,7 +424,7 @@ class Utm_Attribution_Capture {
 	 * @param string $pattern Domain, or brand ending in a dot.
 	 * @return bool
 	 */
-	private function host_matches( $host, $pattern ) {
+	private static function host_matches( $host, $pattern ) {
 		if ( '.' === substr( $pattern, -1 ) ) {
 			// ponytail: TLD shape is [2-3 letters] plus optional 2-letter country; covers .com, .de, .co.uk, .com.au.
 			return (bool) preg_match( '/(^|\.)' . preg_quote( $pattern, '/' ) . '[a-z]{2,3}(\.[a-z]{2})?$/', $host );
@@ -224,10 +444,7 @@ class Utm_Attribution_Capture {
 			return false;
 		}
 
-		$ref_host  = preg_replace( '/^www\./', '', strtolower( (string) wp_parse_url( $referrer, PHP_URL_HOST ) ) );
-		$site_host = preg_replace( '/^www\./', '', strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ) );
-
-		return $ref_host === $site_host;
+		return self::is_internal_host( wp_parse_url( $referrer, PHP_URL_HOST ) );
 	}
 
 	private function get_sanitized_utm_params() {

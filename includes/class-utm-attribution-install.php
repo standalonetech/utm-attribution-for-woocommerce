@@ -79,7 +79,8 @@ CREATE TABLE {$wpdb->prefix}utm_attribution_visits (
   UNIQUE KEY site_id (site_id),
   KEY utm_source (utm_source),
   KEY utm_campaign (utm_campaign),
-  KEY visited_at (visited_at)
+  KEY visited_at (visited_at),
+  KEY ip_hash_visited (ip_hash,visited_at)
 ) $collate;
 
 CREATE TABLE {$wpdb->prefix}utm_attribution_conversions (

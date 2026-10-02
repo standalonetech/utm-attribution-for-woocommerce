@@ -90,7 +90,7 @@ class Utm_Attribution_Conversion {
 			$visit_id = utm_attribution_get_visit_id();
 		}
 
-		if ( ! $visit_id && apply_filters( 'utm_attribution_enable_user_stitching', false ) ) {
+		if ( ! $visit_id && apply_filters( 'utm_attribution_enable_user_stitching', (bool) utm_attribution_get_settings( 'user_stitching' ) ) ) {
 			$visit_id = $this->stitch_visit( $order );
 		}
 
@@ -142,7 +142,7 @@ class Utm_Attribution_Conversion {
 			// Only visits inside the cookie window before the order was placed can claim it.
 			$created = $order->get_date_created();
 			$placed  = $created ? $created->getTimestamp() : time();
-			$days    = (int) apply_filters( 'utm_attribution_cookie_lifetime_days', 30 );
+			$days    = (int) apply_filters( 'utm_attribution_cookie_lifetime_days', (int) utm_attribution_get_settings( 'attribution_window_days' ) );
 
 			$visit_id = $wpdb->get_var( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
 				$wpdb->prepare(

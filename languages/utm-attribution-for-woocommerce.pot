@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: UTM Attribution for WooCommerce 1.3.0\n"
+"Project-Id-Version: UTM Attribution for WooCommerce 1.3.1\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/utm-attribution-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-01T16:54:11+00:00\n"
+"POT-Creation-Date: 2026-10-02T15:29:48+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: utm-attribution-for-woocommerce\n"
@@ -140,6 +140,130 @@ msgstr ""
 msgid "No campaign data recorded for this period."
 msgstr ""
 
+#: includes/admin/views/settings.php:37
+msgid "A code filter on this site may override this value."
+msgstr ""
+
+#: includes/admin/views/settings.php:49
+msgid "Traffic filtering"
+msgstr ""
+
+#: includes/admin/views/settings.php:52
+msgid "Bots and crawlers"
+msgstr ""
+
+#: includes/admin/views/settings.php:53
+msgid "Do not record bots, crawlers, uptime monitors and HTTP tools"
+msgstr ""
+
+#: includes/admin/views/settings.php:56
+msgid "Additional user agents to ignore"
+msgstr ""
+
+#: includes/admin/views/settings.php:57
+msgid "One per line. A visit is ignored when its user agent contains this text (not case-sensitive). 4 to 100 characters. Text that matches your own browser is refused."
+msgstr ""
+
+#: includes/admin/views/settings.php:60
+msgid "Non-page URLs"
+msgstr ""
+
+#: includes/admin/views/settings.php:61
+msgid "Do not record sitemaps, /.well-known/ files, robots.txt, favicon and feeds"
+msgstr ""
+
+#: includes/admin/views/settings.php:64
+msgid "Additional URL paths to ignore"
+msgstr ""
+
+#: includes/admin/views/settings.php:65
+msgid "One per line, starting with \"/\". A visit is ignored when its URL path starts with this text, e.g. /internal-api/. At least 4 characters."
+msgstr ""
+
+#: includes/admin/views/settings.php:68
+msgid "Prefetch requests"
+msgstr ""
+
+#: includes/admin/views/settings.php:69
+msgid "Do not record prefetch requests"
+msgstr ""
+
+#: includes/admin/views/settings.php:69
+msgid "Off by default. Browsers reuse a prefetched page when the visitor clicks, so ignoring prefetches also loses those real visits and their orders."
+msgstr ""
+
+#: includes/admin/views/settings.php:72
+msgid "Repeat visits"
+msgstr ""
+
+#: includes/admin/views/settings.php:74
+msgid "Merge repeat visits from the same browser and source without cookies within 30 minutes"
+msgstr ""
+
+#: includes/admin/views/settings.php:76
+msgid "Inactive: this needs \"Store a hashed IP address\" to be on."
+msgstr ""
+
+#: includes/admin/views/settings.php:81
+msgid "Shop staff"
+msgstr ""
+
+#: includes/admin/views/settings.php:82
+msgid "Do not record visits from logged-in administrators and shop managers"
+msgstr ""
+
+#: includes/admin/views/settings.php:85
+msgid "Internal domains"
+msgstr ""
+
+#: includes/admin/views/settings.php:86
+msgid "One per line, e.g. example.com. Links from these domains and their subdomains are not counted as referrals. Your own site is always internal; add its subdomains here only if they are not real traffic sources."
+msgstr ""
+
+#: includes/admin/views/settings.php:90
+msgid "Attribution"
+msgstr ""
+
+#: includes/admin/views/settings.php:93
+msgid "Attribution window (days)"
+msgstr ""
+
+#: includes/admin/views/settings.php:96
+msgid "How long an order can still be credited to a visit. 1 to 365."
+msgstr ""
+
+#: includes/admin/views/settings.php:101
+msgid "Logged-in customers"
+msgstr ""
+
+#: includes/admin/views/settings.php:103
+msgid "Attribute orders from logged-in customers without a cookie to their latest visit"
+msgstr ""
+
+#: includes/admin/views/settings.php:109
+msgid "Privacy"
+msgstr ""
+
+#: includes/admin/views/settings.php:112
+msgid "IP address"
+msgstr ""
+
+#: includes/admin/views/settings.php:114
+msgid "Store a hashed IP address"
+msgstr ""
+
+#: includes/admin/views/settings.php:114
+msgid "The IP itself is never stored. Required for merging repeat visits."
+msgstr ""
+
+#: includes/admin/views/settings.php:119
+msgid "Remove personal data after (days)"
+msgstr ""
+
+#: includes/admin/views/settings.php:122
+msgid "Clears IP hash, user agent, referrer and user ID from older visits. 0 keeps them."
+msgstr ""
+
 #: includes/class-utm-attribution-admin.php:31
 #: includes/class-utm-attribution-admin.php:32
 msgid "UTM Attribution"
@@ -251,3 +375,16 @@ msgstr ""
 #: includes/class-utm-attribution-privacy.php:133
 msgid "Marketing Visits"
 msgstr ""
+
+#: includes/class-utm-attribution-settings.php:39
+#: includes/class-utm-attribution-settings.php:40
+msgid "Settings"
+msgstr ""
+
+#. translators: %d: number of ignored lines.
+#: includes/class-utm-attribution-settings.php:136
+#, php-format
+msgid "%d line was ignored because it was too short, too long, invalid, over the limit or would match your own browser or home page."
+msgid_plural "%d lines were ignored because they were too short, too long, invalid, over the limit or would match your own browser or home page."
+msgstr[0] ""
+msgstr[1] ""
