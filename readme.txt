@@ -106,14 +106,14 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 
 == Changelog ==
 
-= 1.3.1 (Unreleased) =
-* New - Settings page for traffic filtering, internal domains, attribution window, user stitching, IP hashing and personal data retention.
+= 1.3.1 (October 2, 2026) =
+* New - Settings page under UTM Attribution for traffic filtering, internal domains, attribution window, user stitching, IP hashing and personal data retention.
 * New - Filters `utm_attribution_bot_ua_patterns`, `utm_attribution_noise_path_patterns`, `utm_attribution_exclude_user` and `utm_attribution_internal_domains`.
-* Tweak - Uptime monitors, more crawlers and HTTP tools, sitemaps, /.well-known/ probes and favicon requests no longer create visits.
+* Tweak - Uptime monitors, more crawlers and HTTP tools, sitemaps, /.well-known/ probes and favicon requests no longer create visits. Existing visits are not changed.
+* Tweak - Visits by logged-in administrators and shop managers are no longer recorded.
 * Tweak - Repeat visits from the same browser and source without cookies within 30 minutes are merged into one.
-* Tweak - Shop managers and administrators are no longer recorded as visitors.
-* Tweak - Links from domains listed in Settings (and their subdomains) count as internal rather than as referrals.
-* Performance - Added a database index for repeat-visit detection.
+* Tweak - Subdomains of the domains you list in Settings count as internal rather than as referrals. Your own site's host matches exactly, as before.
+* Performance - Added a database index for the repeat-visit check, installed automatically on update.
 
 = 1.3.0 (October 1, 2026) =
 * Security - CSV exports no longer let visitor-supplied UTM values run as spreadsheet formulas.
@@ -159,7 +159,7 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 == Upgrade Notice ==
 
 = 1.3.1 =
-Far fewer junk visits: uptime monitors, more bots, sitemap and /.well-known/ requests, repeat cookieless hits and staff visits are no longer recorded. New Settings page under UTM Attribution.
+Far fewer junk visits: uptime monitors, more bots, sitemap and /.well-known/ requests, staff and repeat cookieless visits are no longer recorded. New Settings page under UTM Attribution. Existing data is not changed.
 
 = 1.3.0 =
 Security: fixes CSV formula injection and visit takeover through shared links. Webhook and admin-completed orders are now attributed, refunds reduce totals, and personal data on visits older than 365 days is removed daily.
