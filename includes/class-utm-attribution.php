@@ -17,7 +17,7 @@ final class Utm_Attribution {
 	/**
 	 * @var string
 	 */
-	public $version = '1.3.0';
+	public $version = '1.3.1';
 
 	/**
 	 * @var Utm_Attribution

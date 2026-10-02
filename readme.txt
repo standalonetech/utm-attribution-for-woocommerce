@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 
 See which campaigns, search engines and social sites bring visitors and WooCommerce sales — tracked in your own database, no third-party service.
 
@@ -102,6 +102,9 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 
 == Changelog ==
 
+= 1.3.1 (Unreleased) =
+* Tweak - Development in progress.
+
 = 1.3.0 (October 1, 2026) =
 * Security - CSV exports no longer let visitor-supplied UTM values run as spreadsheet formulas.
 * Security - A shared `utm_site_id` link can no longer be used to take over another visitor's visit.
@@ -144,6 +147,9 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.3.1 =
+Development in progress.
 
 = 1.3.0 =
 Security: fixes CSV formula injection and visit takeover through shared links. Webhook and admin-completed orders are now attributed, refunds reduce totals, and personal data on visits older than 365 days is removed daily.
