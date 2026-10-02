@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 1.3.0
+Stable tag: 1.3.1
 
 See which campaigns, search engines and social sites bring visitors and WooCommerce sales — tracked in your own database, no third-party service.
 
@@ -19,7 +19,7 @@ See which campaigns, search engines and social sites bring visitors and WooComme
 
 * **UTM-tagged links** — `utm_source`, `utm_medium`, `utm_campaign`, `utm_term` and `utm_content` are saved whenever a visitor lands on a tagged URL.
 * **Untagged traffic** — Visitors without UTM tags are classified from the referrer: **organic** (Google, Bing, Yahoo, DuckDuckGo, Baidu, Yandex), **social** (Facebook, X/Twitter, Instagram, LinkedIn, Pinterest, Reddit, Telegram), **referral** (any other site), or **direct**.
-* **Noise filtered out** — Bots, crawlers, 404 pages, feeds, AJAX and non-GET requests don't create visits, and reloading the same tagged link within 30 minutes doesn't count twice.
+* **Noise filtered out** — Bots, crawlers, uptime monitors, HTTP tools, shop staff, sitemaps, `/.well-known/` files, 404 pages, feeds, AJAX and non-GET requests don't create visits. Repeat requests from the same browser and source without cookies within 30 minutes count once, and reloading the same tagged link within 30 minutes doesn't count twice.
 * **Click deduplication** — An optional `utm_site_id` parameter lets you give each link click a unique ID so it is recorded only once.
 
 = How orders are attributed =
@@ -44,9 +44,13 @@ See which campaigns, search engines and social sites bring visitors and WooComme
 * Visit data is included in the WordPress **Export Personal Data** and **Erase Personal Data** tools.
 * The IP hash, user agent, referrer and user ID are removed from visits older than 365 days. Campaign totals are kept. The retention period is adjustable.
 
+= Settings =
+
+**UTM Attribution → Settings** lets you turn each traffic filter on or off, add your own user agents, URL paths and internal domains to ignore, and set the attribution window, user stitching, IP hashing and personal data retention.
+
 = Developer friendly =
 
-Filters for the cookie lifetime, which order statuses count as conversions, the user capability, IP hashing, user stitching, capture skipping and data retention, plus actions when the plugin loads and when a conversion is recorded. Compatible with WooCommerce High-Performance Order Storage (HPOS).
+Filters for bot and path patterns, excluded users, internal domains, the cookie lifetime, which order statuses count as conversions, the user capability, IP hashing, user stitching, capture skipping and data retention, plus actions when the plugin loads and when a conversion is recorded. Compatible with WooCommerce High-Performance Order Storage (HPOS).
 
 == Installation ==
 
@@ -102,6 +106,15 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 
 == Changelog ==
 
+= 1.3.1 (October 2, 2026) =
+* New - Settings page under UTM Attribution for traffic filtering, internal domains, attribution window, user stitching, IP hashing and personal data retention.
+* New - Filters `utm_attribution_bot_ua_patterns`, `utm_attribution_noise_path_patterns`, `utm_attribution_exclude_user` and `utm_attribution_internal_domains`.
+* Tweak - Uptime monitors, more crawlers and HTTP tools, sitemaps, /.well-known/ probes and favicon requests no longer create visits. Existing visits are not changed.
+* Tweak - Visits by logged-in administrators and shop managers are no longer recorded.
+* Tweak - Repeat visits from the same browser and source without cookies within 30 minutes are merged into one.
+* Tweak - Subdomains of the domains you list in Settings count as internal rather than as referrals. Your own site's host matches exactly, as before.
+* Performance - Added a database index for the repeat-visit check, installed automatically on update.
+
 = 1.3.0 (October 1, 2026) =
 * Security - CSV exports no longer let visitor-supplied UTM values run as spreadsheet formulas.
 * Security - A shared `utm_site_id` link can no longer be used to take over another visitor's visit.
@@ -144,6 +157,9 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.3.1 =
+Far fewer junk visits: uptime monitors, more bots, sitemap and /.well-known/ requests, staff and repeat cookieless visits are no longer recorded. New Settings page under UTM Attribution. Existing data is not changed.
 
 = 1.3.0 =
 Security: fixes CSV formula injection and visit takeover through shared links. Webhook and admin-completed orders are now attributed, refunds reduce totals, and personal data on visits older than 365 days is removed daily.

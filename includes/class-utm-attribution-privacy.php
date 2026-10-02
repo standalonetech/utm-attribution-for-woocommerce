@@ -48,7 +48,7 @@ class Utm_Attribution_Privacy {
 		 *
 		 * @param int $days Default 365.
 		 */
-		$days = (int) apply_filters( 'utm_attribution_pii_retention_days', 365 );
+		$days = (int) apply_filters( 'utm_attribution_pii_retention_days', (int) utm_attribution_get_settings( 'pii_retention_days' ) );
 		if ( $days <= 0 ) {
 			return;
 		}
