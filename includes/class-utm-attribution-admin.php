@@ -176,7 +176,7 @@ class Utm_Attribution_Admin {
 			wp_die( esc_html__( 'You do not have permission to do this.', 'utm-attribution-for-woocommerce' ), 403 );
 		}
 
-		$ids       = array_slice( array_unique( array_map( 'absint', (array) wp_unslash( $_GET['visit'] ) ) ), 0, 100 ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$ids       = array_slice( array_unique( array_map( 'absint', array_filter( (array) wp_unslash( $_GET['visit'] ), 'is_scalar' ) ) ), 0, 100 ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$protected = Utm_Attribution_Cleanup::get_protected_ids( $ids );
 		$deleted   = Utm_Attribution_Cleanup::delete_visits( array_diff( $ids, $protected ), 'bulk' );
 

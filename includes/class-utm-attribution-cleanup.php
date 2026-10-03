@@ -17,6 +17,7 @@ class Utm_Attribution_Cleanup {
 
 	const OPTION     = 'utm_attribution_cleanup';
 	const LOCK       = 'utm_attribution_cleanup_lock';
+	const CANCEL     = 'utm_attribution_cleanup_cancel';
 	const HOOK       = 'utm_attribution_cleanup_batch';
 	const GROUP      = 'utm-attribution';
 	const NONCE      = 'utm_attribution_cleanup';
@@ -80,7 +81,25 @@ class Utm_Attribution_Cleanup {
 	private static function is_running( $job_id ) {
 		$state = self::state();
 
-		return isset( $state['job'] ) && $state['job']['id'] === $job_id && 'running' === $state['job']['status'];
+		return isset( $state['job'] ) && $state['job']['id'] === $job_id && 'running' === $state['job']['status'] && ! self::is_cancelled( $job_id );
+	}
+
+	/**
+	 * Cancel is recorded in its own option, which batches never write, so an in-flight batch cannot overwrite it.
+	 *
+	 * @param string $job_id Job ID.
+	 * @return bool
+	 */
+	private static function is_cancelled( $job_id ) {
+		wp_cache_delete( self::CANCEL, 'options' );
+
+		return get_option( self::CANCEL ) === $job_id;
+	}
+
+	private static function flag_cancelled( $state ) {
+		if ( isset( $state['job'] ) ) {
+			update_option( self::CANCEL, $state['job']['id'], false );
+		}
 	}
 
 	private static function save( $state ) {
@@ -106,6 +125,7 @@ class Utm_Attribution_Cleanup {
 	public static function unschedule() {
 		$state = self::state();
 		if ( isset( $state['job'] ) && 'running' === $state['job']['status'] ) {
+			self::flag_cancelled( $state );
 			$state['job']['status'] = 'cancelled';
 			unset( $state['job']['anchors'], $state['job']['uas'] );
 			self::save( $state );
@@ -141,7 +161,7 @@ class Utm_Attribution_Cleanup {
 		$job   = isset( $state['job'] ) ? $state['job'] : null;
 
 		return array(
-			'job'      => $job && 'running' === $job['status'] ? $job : null,
+			'job'      => $job && 'running' === $job['status'] && ! self::is_cancelled( $job['id'] ) ? $job : null,
 			'scan'     => self::valid_scan(),
 			'last_run' => isset( $state['last_run'] ) ? $state['last_run'] : null,
 			'stale'    => isset( $state['last_scan'] ) && ! self::valid_scan(),
@@ -229,6 +249,7 @@ class Utm_Attribution_Cleanup {
 		}
 
 		$state = self::state();
+		self::flag_cancelled( $state );
 		if ( isset( $state['job'] ) ) {
 			$state['job']['status'] = 'cancelled';
 			unset( $state['job']['anchors'], $state['job']['uas'] );
@@ -255,7 +276,7 @@ class Utm_Attribution_Cleanup {
 
 		wp_send_json_success(
 			array(
-				'status'  => isset( $job['status'] ) ? $job['status'] : 'idle',
+				'status'  => isset( $job['status'] ) ? ( self::is_cancelled( $job['id'] ) ? 'cancelled' : $job['status'] ) : 'idle',
 				'percent' => ! empty( $job['max_id'] ) ? min( 100, (int) floor( $job['cursor'] / $job['max_id'] * 100 ) ) : 100,
 				'idle'    => isset( $job['heartbeat'] ) ? time() - $job['heartbeat'] : 0,
 			)
@@ -275,8 +296,16 @@ class Utm_Attribution_Cleanup {
 		$state = self::state();
 		$job   = isset( $state['job'] ) ? $state['job'] : null;
 
-		// A cancelled or superseded job must not keep running, and batches need WooCommerce for the order checks.
-		if ( ! $job || $job['id'] !== $job_id || 'running' !== $job['status'] || ! class_exists( 'WooCommerce' ) ) {
+		if ( ! $job || $job['id'] !== $job_id || 'running' !== $job['status'] ) {
+			return;
+		}
+
+		// Cancelled (possibly overwritten by a batch that was already running), or WooCommerce gone: stop for good.
+		if ( self::is_cancelled( $job_id ) || ! class_exists( 'WooCommerce' ) ) {
+			$state['job']['status'] = 'cancelled';
+			unset( $state['job']['anchors'], $state['job']['uas'] );
+			self::save( $state );
+			delete_option( self::LOCK );
 			return;
 		}
 
@@ -331,6 +360,8 @@ class Utm_Attribution_Cleanup {
 		}
 
 		if ( $is_delete && $ids ) {
+			// An order may have picked one of these visits up since classification.
+			$ids             = array_diff( $ids, self::visit_ids_on_orders( $ids ) );
 			$job['deleted'] += self::delete_visits( $ids, 'cleanup' );
 		}
 
@@ -342,7 +373,7 @@ class Utm_Attribution_Cleanup {
 		}
 
 		// Re-read so a cancel (or a newer job) saved meanwhile is not overwritten.
-		// ponytail: a cancel landing between this check and the save is still lost; one more batch of at most 1000 rows runs before the next check stops it.
+		// A cancel landing after this check is still caught: its own flag is read again at the next batch's entry.
 		if ( ! self::is_running( $job_id ) ) {
 			return;
 		}
@@ -519,7 +550,7 @@ class Utm_Attribution_Cleanup {
 		}
 
 		$found    = array();
-		$statuses = array_merge( array_keys( wc_get_order_statuses() ), array( 'checkout-draft' ) );
+		$statuses = array_merge( array_keys( wc_get_order_statuses() ), array( 'checkout-draft', 'trash' ) );
 
 		foreach ( array_chunk( array_values( array_filter( array_map( 'absint', $ids ) ) ), 1000 ) as $chunk ) {
 			$orders = wc_get_orders(

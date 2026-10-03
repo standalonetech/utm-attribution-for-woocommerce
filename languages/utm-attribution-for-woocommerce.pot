@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: UTM Attribution for WooCommerce 1.3.1\n"
+"Project-Id-Version: UTM Attribution for WooCommerce 1.3.2\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/utm-attribution-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-02T15:36:04+00:00\n"
+"POT-Creation-Date: 2026-10-03T13:18:37+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: utm-attribution-for-woocommerce\n"
@@ -60,10 +60,12 @@ msgid "This Year"
 msgstr ""
 
 #: includes/admin/views/dashboard.php:45
+#: includes/admin/views/tools.php:73
 msgid "From"
 msgstr ""
 
 #: includes/admin/views/dashboard.php:52
+#: includes/admin/views/tools.php:75
 msgid "To"
 msgstr ""
 
@@ -96,34 +98,34 @@ msgid "Top Performing Campaigns"
 msgstr ""
 
 #: includes/admin/views/dashboard.php:104
-#: includes/class-utm-attribution-admin.php:172
-#: includes/class-utm-attribution-admin.php:190
+#: includes/class-utm-attribution-admin.php:206
+#: includes/class-utm-attribution-admin.php:234
 msgid "Export CSV"
 msgstr ""
 
 #: includes/admin/views/dashboard.php:109
-#: includes/class-utm-attribution-export.php:151
+#: includes/class-utm-attribution-export.php:154
 msgid "Campaign Name"
 msgstr ""
 
 #: includes/admin/views/dashboard.php:110
 #: includes/class-utm-attribution-admin.php:51
 #: includes/class-utm-attribution-admin.php:52
-#: includes/class-utm-attribution-admin.php:171
-#: includes/class-utm-attribution-export.php:152
+#: includes/class-utm-attribution-admin.php:205
+#: includes/class-utm-attribution-export.php:155
 msgid "Visits"
 msgstr ""
 
 #: includes/admin/views/dashboard.php:111
-#: includes/class-utm-attribution-admin.php:60
-#: includes/class-utm-attribution-admin.php:61
-#: includes/class-utm-attribution-admin.php:189
-#: includes/class-utm-attribution-export.php:153
+#: includes/class-utm-attribution-admin.php:62
+#: includes/class-utm-attribution-admin.php:63
+#: includes/class-utm-attribution-admin.php:233
+#: includes/class-utm-attribution-export.php:156
 msgid "Conversions"
 msgstr ""
 
 #: includes/admin/views/dashboard.php:112
-#: includes/class-utm-attribution-export.php:154
+#: includes/class-utm-attribution-export.php:157
 msgid "Conv. Rate"
 msgstr ""
 
@@ -132,7 +134,7 @@ msgid "Revenue Generated"
 msgstr ""
 
 #: includes/admin/views/dashboard.php:120
-#: includes/class-utm-attribution-export.php:162
+#: includes/class-utm-attribution-export.php:165
 msgid "(Direct / None)"
 msgstr ""
 
@@ -144,124 +146,255 @@ msgstr ""
 msgid "A code filter on this site may override this value."
 msgstr ""
 
-#: includes/admin/views/settings.php:49
+#: includes/admin/views/settings.php:50
 msgid "Traffic filtering"
 msgstr ""
 
-#: includes/admin/views/settings.php:52
+#: includes/admin/views/settings.php:53
 msgid "Bots and crawlers"
 msgstr ""
 
-#: includes/admin/views/settings.php:53
+#: includes/admin/views/settings.php:54
 msgid "Do not record bots, crawlers, uptime monitors and HTTP tools"
 msgstr ""
 
-#: includes/admin/views/settings.php:56
+#: includes/admin/views/settings.php:57
 msgid "Additional user agents to ignore"
 msgstr ""
 
-#: includes/admin/views/settings.php:57
+#: includes/admin/views/settings.php:58
 msgid "One per line. A visit is ignored when its user agent contains this text (not case-sensitive). 4 to 100 characters. Text that matches your own browser is refused."
 msgstr ""
 
-#: includes/admin/views/settings.php:60
+#: includes/admin/views/settings.php:61
+#: includes/class-utm-attribution-cleanup.php:59
 msgid "Non-page URLs"
 msgstr ""
 
-#: includes/admin/views/settings.php:61
+#: includes/admin/views/settings.php:62
 msgid "Do not record sitemaps, /.well-known/ files, robots.txt, favicon and feeds"
 msgstr ""
 
-#: includes/admin/views/settings.php:64
+#: includes/admin/views/settings.php:65
 msgid "Additional URL paths to ignore"
 msgstr ""
 
-#: includes/admin/views/settings.php:65
+#: includes/admin/views/settings.php:66
 msgid "One per line, starting with \"/\". A visit is ignored when its URL path starts with this text, e.g. /internal-api/. At least 4 characters."
 msgstr ""
 
-#: includes/admin/views/settings.php:68
+#: includes/admin/views/settings.php:69
 msgid "Prefetch requests"
 msgstr ""
 
-#: includes/admin/views/settings.php:69
+#: includes/admin/views/settings.php:70
 msgid "Do not record prefetch requests"
 msgstr ""
 
-#: includes/admin/views/settings.php:69
+#: includes/admin/views/settings.php:70
 msgid "Off by default. Browsers reuse a prefetched page when the visitor clicks, so ignoring prefetches also loses those real visits and their orders."
 msgstr ""
 
-#: includes/admin/views/settings.php:72
+#: includes/admin/views/settings.php:73
 msgid "Repeat visits"
 msgstr ""
 
-#: includes/admin/views/settings.php:74
+#: includes/admin/views/settings.php:75
 msgid "Merge repeat visits from the same browser and source without cookies within 30 minutes"
 msgstr ""
 
-#: includes/admin/views/settings.php:76
+#: includes/admin/views/settings.php:77
 msgid "Inactive: this needs \"Store a hashed IP address\" to be on."
 msgstr ""
 
-#: includes/admin/views/settings.php:81
+#: includes/admin/views/settings.php:82
 msgid "Shop staff"
 msgstr ""
 
-#: includes/admin/views/settings.php:82
+#: includes/admin/views/settings.php:83
 msgid "Do not record visits from logged-in administrators and shop managers"
 msgstr ""
 
-#: includes/admin/views/settings.php:85
+#: includes/admin/views/settings.php:86
 msgid "Internal domains"
 msgstr ""
 
-#: includes/admin/views/settings.php:86
+#: includes/admin/views/settings.php:87
 msgid "One per line, e.g. example.com. Links from these domains and their subdomains are not counted as referrals. Your own site is always internal; add its subdomains here only if they are not real traffic sources."
 msgstr ""
 
-#: includes/admin/views/settings.php:90
+#: includes/admin/views/settings.php:91
 msgid "Attribution"
 msgstr ""
 
-#: includes/admin/views/settings.php:93
+#: includes/admin/views/settings.php:94
 msgid "Attribution window (days)"
 msgstr ""
 
-#: includes/admin/views/settings.php:96
+#: includes/admin/views/settings.php:97
 msgid "How long an order can still be credited to a visit. 1 to 365."
 msgstr ""
 
-#: includes/admin/views/settings.php:101
+#: includes/admin/views/settings.php:102
 msgid "Logged-in customers"
 msgstr ""
 
-#: includes/admin/views/settings.php:103
+#: includes/admin/views/settings.php:104
 msgid "Attribute orders from logged-in customers without a cookie to their latest visit"
 msgstr ""
 
-#: includes/admin/views/settings.php:109
+#: includes/admin/views/settings.php:110
 msgid "Privacy"
 msgstr ""
 
-#: includes/admin/views/settings.php:112
+#: includes/admin/views/settings.php:113
 msgid "IP address"
 msgstr ""
 
-#: includes/admin/views/settings.php:114
+#: includes/admin/views/settings.php:115
 msgid "Store a hashed IP address"
 msgstr ""
 
-#: includes/admin/views/settings.php:114
+#: includes/admin/views/settings.php:115
 msgid "The IP itself is never stored. Required for merging repeat visits."
 msgstr ""
 
-#: includes/admin/views/settings.php:119
+#: includes/admin/views/settings.php:120
 msgid "Remove personal data after (days)"
 msgstr ""
 
-#: includes/admin/views/settings.php:122
+#: includes/admin/views/settings.php:123
 msgid "Clears IP hash, user agent, referrer and user ID from older visits. 0 keeps them."
+msgstr ""
+
+#: includes/admin/views/tools.php:22
+msgid "Started. You can leave this page; the work continues in the background."
+msgstr ""
+
+#: includes/admin/views/tools.php:23
+msgid "Cancelled."
+msgstr ""
+
+#: includes/admin/views/tools.php:24
+msgid "A cleanup is already running."
+msgstr ""
+
+#: includes/admin/views/tools.php:25
+#: includes/class-utm-attribution-export.php:234
+msgid "Settings or data changed. Please scan again."
+msgstr ""
+
+#: includes/admin/views/tools.php:26
+msgid "Tick the confirmation box to delete."
+msgstr ""
+
+#: includes/admin/views/tools.php:27
+msgid "Cleanup needs WooCommerce (it includes Action Scheduler)."
+msgstr ""
+
+#: includes/admin/views/tools.php:45
+msgid "Clean up past noise"
+msgstr ""
+
+#: includes/admin/views/tools.php:46
+msgid "Finds visits that your current filters would no longer record: bots, uptime monitors, non-page URLs, repeat visits without cookies and staff. Visits linked to orders are never deleted."
+msgstr ""
+
+#: includes/admin/views/tools.php:53
+msgid "Waiting for background processing. See WooCommerce → Status → Scheduled Actions (group utm-attribution)."
+msgstr ""
+
+#: includes/admin/views/tools.php:55
+msgid "Deleting…"
+msgstr ""
+
+#: includes/admin/views/tools.php:55
+msgid "Scanning…"
+msgstr ""
+
+#: includes/admin/views/tools.php:57
+msgid "You can leave this page."
+msgstr ""
+
+#: includes/admin/views/tools.php:64
+msgid "Cancel"
+msgstr ""
+
+#. translators: %s: site timezone name.
+#: includes/admin/views/tools.php:80
+#, php-format
+msgid "Optional, in your site timezone (%s). Leave empty to scan all visits."
+msgstr ""
+
+#: includes/admin/views/tools.php:84
+msgid "Scan"
+msgstr ""
+
+#: includes/admin/views/tools.php:88
+msgid "The last scan is no longer valid (older than 30 minutes, another user, or settings changed). Scan again to delete."
+msgstr ""
+
+#: includes/admin/views/tools.php:92
+msgid "Scan result"
+msgstr ""
+
+#: includes/admin/views/tools.php:97
+#: includes/class-utm-attribution-export.php:249
+msgid "Category"
+msgstr ""
+
+#: includes/admin/views/tools.php:98
+msgid "Found"
+msgstr ""
+
+#: includes/admin/views/tools.php:99
+msgid "Protected"
+msgstr ""
+
+#: includes/admin/views/tools.php:100
+msgid "Will delete"
+msgstr ""
+
+#: includes/admin/views/tools.php:112
+msgid "n/a (IP hashing or repeat merging is off)"
+msgstr ""
+
+#: includes/admin/views/tools.php:123
+#: includes/class-utm-attribution-conversions-list-table.php:34
+#: includes/class-utm-attribution-export.php:118
+msgid "Total"
+msgstr ""
+
+#: includes/admin/views/tools.php:132
+msgid "Top user agents found"
+msgstr ""
+
+#: includes/admin/views/tools.php:135
+msgid "(empty)"
+msgstr ""
+
+#: includes/admin/views/tools.php:142
+msgid "Download rows to be deleted (CSV)"
+msgstr ""
+
+#: includes/admin/views/tools.php:148
+msgid "Back up your database first. Deleted visits cannot be restored."
+msgstr ""
+
+#: includes/admin/views/tools.php:152
+msgid "I understand this cannot be undone"
+msgstr ""
+
+#. translators: %s: number of visits.
+#: includes/admin/views/tools.php:158
+#, php-format
+msgid "Delete %s visits"
+msgstr ""
+
+#. translators: 1: date and time, 2: user name, 3: deleted count, 4: protected count.
+#: includes/admin/views/tools.php:176
+#, php-format
+msgid "Last cleanup: %1$s by %2$s. %3$s visits deleted, %4$s kept because they are linked to orders."
 msgstr ""
 
 #: includes/class-utm-attribution-admin.php:31
@@ -274,30 +407,68 @@ msgstr ""
 msgid "Dashboard"
 msgstr ""
 
+#: includes/class-utm-attribution-admin.php:176
+#: includes/class-utm-attribution-cleanup.php:177
+#: includes/class-utm-attribution-cleanup.php:248
+msgid "You do not have permission to do this."
+msgstr ""
+
+#. translators: 1: number deleted, 2: number skipped.
+#: includes/class-utm-attribution-admin.php:214
+#, php-format
+msgid "%1$d visits deleted. %2$d skipped because they are linked to orders."
+msgstr ""
+
+#: includes/class-utm-attribution-admin.php:218
+msgid "Delete the selected visits? This cannot be undone."
+msgstr ""
+
+#: includes/class-utm-attribution-cleanup.php:57
+msgid "Bots & crawlers"
+msgstr ""
+
+#: includes/class-utm-attribution-cleanup.php:58
+msgid "Uptime monitors"
+msgstr ""
+
+#: includes/class-utm-attribution-cleanup.php:60
+msgid "Repeat visits without cookies"
+msgstr ""
+
+#: includes/class-utm-attribution-cleanup.php:61
+msgid "Staff visits"
+msgstr ""
+
+#. translators: %s: link to the Tools tab.
+#: includes/class-utm-attribution-cleanup.php:673
+#, php-format
+msgid "UTM Attribution now filters more bot traffic. Review and remove past bot visits in %s."
+msgstr ""
+
+#: includes/class-utm-attribution-cleanup.php:674
+msgid "Settings → Tools"
+msgstr ""
+
 #: includes/class-utm-attribution-conversions-list-table.php:31
-#: includes/class-utm-attribution-export.php:71
-#: includes/class-utm-attribution-export.php:112
-#: includes/class-utm-attribution-visits-list-table.php:31
+#: includes/class-utm-attribution-export.php:74
+#: includes/class-utm-attribution-export.php:115
+#: includes/class-utm-attribution-export.php:248
+#: includes/class-utm-attribution-visits-list-table.php:32
 msgid "ID"
 msgstr ""
 
 #: includes/class-utm-attribution-conversions-list-table.php:32
-#: includes/class-utm-attribution-export.php:113
+#: includes/class-utm-attribution-export.php:116
 msgid "Visit ID"
 msgstr ""
 
 #: includes/class-utm-attribution-conversions-list-table.php:33
-#: includes/class-utm-attribution-export.php:114
+#: includes/class-utm-attribution-export.php:117
 msgid "Order ID"
 msgstr ""
 
-#: includes/class-utm-attribution-conversions-list-table.php:34
-#: includes/class-utm-attribution-export.php:115
-msgid "Total"
-msgstr ""
-
 #: includes/class-utm-attribution-conversions-list-table.php:35
-#: includes/class-utm-attribution-export.php:117
+#: includes/class-utm-attribution-export.php:120
 msgid "Converted At"
 msgstr ""
 
@@ -309,63 +480,70 @@ msgstr ""
 msgid "You do not have permission to export data."
 msgstr ""
 
-#: includes/class-utm-attribution-export.php:51
+#: includes/class-utm-attribution-export.php:54
 msgid "Invalid export type."
 msgstr ""
 
-#: includes/class-utm-attribution-export.php:72
-#: includes/class-utm-attribution-visits-list-table.php:32
+#: includes/class-utm-attribution-export.php:75
+#: includes/class-utm-attribution-visits-list-table.php:33
 msgid "Site ID"
 msgstr ""
 
-#: includes/class-utm-attribution-export.php:73
+#: includes/class-utm-attribution-export.php:76
+#: includes/class-utm-attribution-export.php:251
 #: includes/class-utm-attribution-privacy.php:116
-#: includes/class-utm-attribution-visits-list-table.php:33
+#: includes/class-utm-attribution-visits-list-table.php:34
 msgid "Source"
 msgstr ""
 
-#: includes/class-utm-attribution-export.php:74
+#: includes/class-utm-attribution-export.php:77
+#: includes/class-utm-attribution-export.php:252
 #: includes/class-utm-attribution-privacy.php:117
-#: includes/class-utm-attribution-visits-list-table.php:34
+#: includes/class-utm-attribution-visits-list-table.php:35
 msgid "Medium"
 msgstr ""
 
-#: includes/class-utm-attribution-export.php:75
+#: includes/class-utm-attribution-export.php:78
+#: includes/class-utm-attribution-export.php:253
 #: includes/class-utm-attribution-privacy.php:118
-#: includes/class-utm-attribution-visits-list-table.php:35
+#: includes/class-utm-attribution-visits-list-table.php:36
 msgid "Campaign"
 msgstr ""
 
-#: includes/class-utm-attribution-export.php:76
+#: includes/class-utm-attribution-export.php:79
+#: includes/class-utm-attribution-export.php:254
 #: includes/class-utm-attribution-privacy.php:119
-#: includes/class-utm-attribution-visits-list-table.php:36
+#: includes/class-utm-attribution-visits-list-table.php:37
 msgid "Landing URL"
 msgstr ""
 
-#: includes/class-utm-attribution-export.php:77
-#: includes/class-utm-attribution-visits-list-table.php:37
+#: includes/class-utm-attribution-export.php:80
+#: includes/class-utm-attribution-export.php:250
+#: includes/class-utm-attribution-visits-list-table.php:38
 msgid "Visited At"
 msgstr ""
 
-#: includes/class-utm-attribution-export.php:116
+#: includes/class-utm-attribution-export.php:119
 msgid "Currency"
 msgstr ""
 
-#: includes/class-utm-attribution-export.php:155
+#: includes/class-utm-attribution-export.php:158
 msgid "Revenue"
+msgstr ""
+
+#: includes/class-utm-attribution-export.php:255
+#: includes/class-utm-attribution-privacy.php:120
+msgid "Referrer"
+msgstr ""
+
+#: includes/class-utm-attribution-export.php:256
+#: includes/class-utm-attribution-privacy.php:121
+msgid "User Agent"
 msgstr ""
 
 #: includes/class-utm-attribution-privacy.php:72
 #: includes/class-utm-attribution-privacy.php:84
 msgid "UTM Attribution Visits"
-msgstr ""
-
-#: includes/class-utm-attribution-privacy.php:120
-msgid "Referrer"
-msgstr ""
-
-#: includes/class-utm-attribution-privacy.php:121
-msgid "User Agent"
 msgstr ""
 
 #: includes/class-utm-attribution-privacy.php:122
@@ -381,10 +559,22 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
+#: includes/class-utm-attribution-settings.php:68
+msgid "General"
+msgstr ""
+
+#: includes/class-utm-attribution-settings.php:69
+msgid "Tools"
+msgstr ""
+
 #. translators: %d: number of ignored lines.
-#: includes/class-utm-attribution-settings.php:136
+#: includes/class-utm-attribution-settings.php:158
 #, php-format
 msgid "%d line was ignored because it was too short, too long, invalid, over the limit or would match your own browser or home page."
 msgid_plural "%d lines were ignored because they were too short, too long, invalid, over the limit or would match your own browser or home page."
 msgstr[0] ""
 msgstr[1] ""
+
+#: includes/class-utm-attribution-visits-list-table.php:43
+msgid "Delete"
+msgstr ""
