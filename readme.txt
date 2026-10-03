@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 
 See which campaigns, search engines and social sites bring visitors and WooCommerce sales — tracked in your own database, no third-party service.
 
@@ -106,6 +106,9 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 
 == Changelog ==
 
+= 1.3.2 (Unreleased) =
+* Tweak - Development in progress.
+
 = 1.3.1 (October 2, 2026) =
 * New - Settings page under UTM Attribution for traffic filtering, internal domains, attribution window, user stitching, IP hashing and personal data retention.
 * New - Filters `utm_attribution_bot_ua_patterns`, `utm_attribution_noise_path_patterns`, `utm_attribution_exclude_user` and `utm_attribution_internal_domains`.
@@ -157,6 +160,9 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.3.2 =
+Development in progress.
 
 = 1.3.1 =
 Far fewer junk visits: uptime monitors, more bots, sitemap and /.well-known/ requests, staff and repeat cookieless visits are no longer recorded. New Settings page under UTM Attribution. Existing data is not changed.
