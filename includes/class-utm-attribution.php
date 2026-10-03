@@ -17,7 +17,7 @@ final class Utm_Attribution {
 	/**
 	 * @var string
 	 */
-	public $version = '1.3.1';
+	public $version = '1.3.2';
 
 	/**
 	 * @var Utm_Attribution
@@ -67,6 +67,7 @@ final class Utm_Attribution {
 		include_once UTM_ATTRIBUTION_ABSPATH . 'includes/class-utm-attribution-reports.php';
 		include_once UTM_ATTRIBUTION_ABSPATH . 'includes/class-utm-attribution-export.php';
 		include_once UTM_ATTRIBUTION_ABSPATH . 'includes/class-utm-attribution-privacy.php';
+		include_once UTM_ATTRIBUTION_ABSPATH . 'includes/class-utm-attribution-cleanup.php'; // Action Scheduler runs batches outside wp-admin.
 
 		if ( is_admin() ) {
 			include_once UTM_ATTRIBUTION_ABSPATH . 'includes/class-utm-attribution-admin.php';
@@ -79,6 +80,7 @@ final class Utm_Attribution {
 	private function init_hooks() {
 		register_activation_hook( UTM_ATTRIBUTION_PLUGIN_FILE, array( 'Utm_Attribution_Install', 'install' ) );
 		register_deactivation_hook( UTM_ATTRIBUTION_PLUGIN_FILE, array( 'Utm_Attribution_Privacy', 'unschedule' ) );
+		register_deactivation_hook( UTM_ATTRIBUTION_PLUGIN_FILE, array( 'Utm_Attribution_Cleanup', 'unschedule' ) );
 		add_action( 'init', array( $this, 'init' ), 0 );
 		add_action( 'before_woocommerce_init', array( $this, 'declare_wc_compatibility' ) );
 	}

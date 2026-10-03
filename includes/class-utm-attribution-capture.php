@@ -199,6 +199,17 @@ class Utm_Attribution_Capture {
 	}
 
 	/**
+	 * Fingerprint of everything that decides what the classifiers drop, so a cleanup scan can tell its rules changed.
+	 *
+	 * @return string
+	 */
+	public static function rules_hash() {
+		$flags = array_intersect_key( utm_attribution_get_settings(), array_flip( array( 'exclude_bots', 'exclude_non_page', 'exclude_staff', 'merge_repeat_visits', 'ip_hashing' ) ) );
+
+		return md5( wp_json_encode( array( $flags, self::compile( 'monitor' ), self::compile( 'bot' ), self::compile( 'path' ) ) ) );
+	}
+
+	/**
 	 * Whether a logged-in user is shop staff whose browsing should not count as visits.
 	 *
 	 * @param int $user_id User ID.

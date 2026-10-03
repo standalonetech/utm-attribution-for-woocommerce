@@ -28,6 +28,7 @@ class Utm_Attribution_Visits_List_Table extends WP_List_Table {
 
 	public function get_columns() {
 		return array(
+			'cb'           => '<input type="checkbox" />',
 			'id'           => __( 'ID', 'utm-attribution-for-woocommerce' ),
 			'site_id'      => __( 'Site ID', 'utm-attribution-for-woocommerce' ),
 			'utm_source'   => __( 'Source', 'utm-attribution-for-woocommerce' ),
@@ -36,6 +37,14 @@ class Utm_Attribution_Visits_List_Table extends WP_List_Table {
 			'landing_url'  => __( 'Landing URL', 'utm-attribution-for-woocommerce' ),
 			'visited_at'   => __( 'Visited At', 'utm-attribution-for-woocommerce' ),
 		);
+	}
+
+	public function get_bulk_actions() {
+		return array( 'delete' => __( 'Delete', 'utm-attribution-for-woocommerce' ) );
+	}
+
+	public function column_cb( $item ) {
+		return '<input type="checkbox" name="visit[]" value="' . esc_attr( $item['id'] ) . '" />';
 	}
 
 	public function prepare_items() {

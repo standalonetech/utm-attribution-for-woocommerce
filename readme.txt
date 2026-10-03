@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 
 See which campaigns, search engines and social sites bring visitors and WooCommerce sales — tracked in your own database, no third-party service.
 
@@ -106,6 +106,14 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 
 == Changelog ==
 
+= 1.3.2 (October 3, 2026) =
+* New - Settings > Tools scans past visits for bots, monitors, non-page URLs, cookieless repeats and staff, and shows a preview you can download as CSV.
+* New - Confirming a cleanup deletes the found visits in the background, so large sites are not slowed down.
+* New - Visits list has a Delete bulk action that reports how many visits were removed and how many were skipped.
+* New - A dismissible notice on the Plugins and UTM Attribution screens points existing sites to the new cleanup tool.
+* New - Action `utm_attribution_visits_deleted` fires after visits are deleted.
+* Tweak - Visits linked to a conversion or referenced by any order are never deleted, so order attribution and reports stay intact.
+
 = 1.3.1 (October 2, 2026) =
 * New - Settings page under UTM Attribution for traffic filtering, internal domains, attribution window, user stitching, IP hashing and personal data retention.
 * New - Filters `utm_attribution_bot_ua_patterns`, `utm_attribution_noise_path_patterns`, `utm_attribution_exclude_user` and `utm_attribution_internal_domains`.
@@ -157,6 +165,9 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.3.2 =
+New cleanup tool under UTM Attribution > Settings > Tools previews and removes past bot and junk visits. Visits linked to orders are never deleted; nothing is removed until you confirm.
 
 = 1.3.1 =
 Far fewer junk visits: uptime monitors, more bots, sitemap and /.well-known/ requests, staff and repeat cookieless visits are no longer recorded. New Settings page under UTM Attribution. Existing data is not changed.

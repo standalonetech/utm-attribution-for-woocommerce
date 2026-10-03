@@ -46,7 +46,7 @@ class Utm_Attribution_Admin {
 			array( $this, 'dashboard_page' )
 		);
 
-		add_submenu_page(
+		$visits_hook = add_submenu_page(
 			'utm-attribution-for-woocommerce',
 			__( 'Visits', 'utm-attribution-for-woocommerce' ),
 			__( 'Visits', 'utm-attribution-for-woocommerce' ),
@@ -54,6 +54,8 @@ class Utm_Attribution_Admin {
 			'utm-attribution-visits',
 			array( $this, 'visits_page' )
 		);
+
+		add_action( 'load-' . $visits_hook, array( $this, 'handle_visits_bulk' ) );
 
 		add_submenu_page(
 			'utm-attribution-for-woocommerce',
@@ -159,6 +161,38 @@ class Utm_Attribution_Admin {
 		include UTM_ATTRIBUTION_ABSPATH . 'includes/admin/views/dashboard.php';
 	}
 
+	/**
+	 * Visits list "Delete" bulk action. Visits linked to orders are skipped.
+	 */
+	public function handle_visits_bulk() {
+		$action = isset( $_GET['action'] ) && '-1' !== $_GET['action'] ? sanitize_key( wp_unslash( $_GET['action'] ) ) : ( isset( $_GET['action2'] ) ? sanitize_key( wp_unslash( $_GET['action2'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- verified below.
+		if ( 'delete' !== $action || empty( $_GET['visit'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			return;
+		}
+
+		check_admin_referer( 'bulk-visits' );
+
+		if ( ! current_user_can( apply_filters( 'utm_attribution_user_capability', 'manage_options' ) ) ) {
+			wp_die( esc_html__( 'You do not have permission to do this.', 'utm-attribution-for-woocommerce' ), 403 );
+		}
+
+		$ids       = array_slice( array_unique( array_map( 'absint', array_filter( (array) wp_unslash( $_GET['visit'] ), 'is_scalar' ) ) ), 0, 100 ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+		$protected = Utm_Attribution_Cleanup::get_protected_ids( $ids );
+		$deleted   = Utm_Attribution_Cleanup::delete_visits( array_diff( $ids, $protected ), 'bulk' );
+
+		wp_safe_redirect(
+			add_query_arg(
+				array(
+					'page'    => 'utm-attribution-visits',
+					'deleted' => $deleted,
+					'skipped' => count( $ids ) - $deleted,
+				),
+				admin_url( 'admin.php' )
+			)
+		);
+		exit;
+	}
+
 	public function visits_page() {
 		$table = new Utm_Attribution_Visits_List_Table();
 		$table->prepare_items();
@@ -171,7 +205,17 @@ class Utm_Attribution_Admin {
 		echo '<div class="wrap utm-attribution-dashboard"><h2>' . esc_html__( 'Visits', 'utm-attribution-for-woocommerce' );
 		echo ' <a href="' . esc_url( $export_url ) . '" class="page-title-action">' . esc_html__( 'Export CSV', 'utm-attribution-for-woocommerce' ) . '</a>';
 		echo '</h2>';
-		echo '<form method="get">';
+
+		// Result counts from the bulk-delete redirect; display only.
+		if ( isset( $_GET['deleted'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$deleted = absint( $_GET['deleted'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$skipped = isset( $_GET['skipped'] ) ? absint( $_GET['skipped'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			/* translators: 1: number deleted, 2: number skipped. */
+			$message = sprintf( __( '%1$d visits deleted. %2$d skipped because they are linked to orders.', 'utm-attribution-for-woocommerce' ), $deleted, $skipped );
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
+		}
+
+		echo '<form method="get" id="utm-visits-form" data-confirm="' . esc_attr__( 'Delete the selected visits? This cannot be undone.', 'utm-attribution-for-woocommerce' ) . '">';
 		echo '<input type="hidden" name="page" value="utm-attribution-visits" />';
 		$table->display();
 		echo '</form></div>';

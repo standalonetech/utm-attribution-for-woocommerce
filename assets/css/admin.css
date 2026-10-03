@@ -250,6 +250,35 @@
     border-bottom: none;
 }
 
+/* Bulk-select checkbox column and the primary (ID) cell: same padding as the other cells, centred on the row. */
+.utm-attribution-dashboard table.wp-list-table .check-column {
+    width: 2.2em;
+    padding-left: 16px;
+    padding-right: 0;
+    vertical-align: middle;
+}
+
+.utm-attribution-dashboard table.wp-list-table tbody td.check-column,
+.utm-attribution-dashboard table.wp-list-table tbody th.column-primary {
+    padding-top: 16px;
+    padding-bottom: 16px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.utm-attribution-dashboard table.wp-list-table tbody th.column-primary {
+    padding-left: 16px;
+    padding-right: 16px;
+    color: #334155;
+    font-size: 13px;
+    font-weight: 400;
+}
+
+.utm-attribution-dashboard table.wp-list-table .check-column input[type="checkbox"] {
+    margin: 0;
+    vertical-align: middle;
+}
+
 @media (max-width: 782px) {
     .utm-attribution-filters {
         flex-direction: column;
@@ -270,4 +299,23 @@
         margin-top: 0 !important;
         width: 100%;
     }
+}
+
+/* Noise cleanup (Settings → Tools) */
+.utm-cleanup-bar {
+    height: 12px;
+    max-width: 480px;
+    margin: 8px 0;
+    background: #dcdcde;
+    border-radius: 6px;
+    overflow: hidden;
+}
+.utm-cleanup-bar span {
+    display: block;
+    height: 100%;
+    background: #2271b1;
+    transition: width 0.4s;
+}
+.utm-cleanup-table {
+    max-width: 640px;
 }
