@@ -126,7 +126,15 @@ add_action( 'utm_attribution_loaded', function() {} );
 add_action( 'utm_attribution_conversion_recorded', function( $conversion_id, $visit_id, $order ) {
     // e.g. push to your CRM.
 }, 10, 3 );
+
+// Fires after visits are deleted by the Tools cleanup ('cleanup') or the Visits bulk action ('bulk').
+add_action( 'utm_attribution_visits_deleted', function( $visit_ids, $context ) {}, 10, 2 );
 ```
+
+### Cleaning Up Past Noise
+**UTM Attribution → Settings → Tools** scans stored visits with the current filters (bots, uptime monitors, non-page URLs, cookieless repeat visits, staff), lets you download the rows as CSV, and deletes them in the background through Action Scheduler. Visits linked to a conversion or referenced by any order are never deleted. The Visits list also has a **Delete** bulk action with the same protection.
+
+Anyone allowed by `utm_attribution_user_capability` can delete visits, so do not lower it to a role you do not trust.
 
 ## 📊 Database Schema
 

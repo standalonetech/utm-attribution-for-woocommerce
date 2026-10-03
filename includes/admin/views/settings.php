@@ -40,6 +40,7 @@ $utm_override = function ( $key ) use ( $overrides ) {
 ?>
 <div class="wrap">
 	<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
+	<?php Utm_Attribution_Settings::render_tabs( 'general' ); ?>
 
 	<?php settings_errors(); ?>
 

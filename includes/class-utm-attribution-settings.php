@@ -56,7 +56,29 @@ class Utm_Attribution_Settings {
 		);
 	}
 
+	/**
+	 * General / Tools tab links.
+	 *
+	 * @param string $active 'general' or 'tools'.
+	 */
+	public static function render_tabs( $active ) {
+		$base = admin_url( 'admin.php?page=utm-attribution-settings' );
+		?>
+		<nav class="nav-tab-wrapper">
+			<a href="<?php echo esc_url( $base ); ?>" class="nav-tab <?php echo 'general' === $active ? 'nav-tab-active' : ''; ?>"><?php esc_html_e( 'General', 'utm-attribution-for-woocommerce' ); ?></a>
+			<a href="<?php echo esc_url( $base . '&tab=tools' ); ?>" class="nav-tab <?php echo 'tools' === $active ? 'nav-tab-active' : ''; ?>"><?php esc_html_e( 'Tools', 'utm-attribution-for-woocommerce' ); ?></a>
+		</nav>
+		<?php
+	}
+
 	public function settings_page() {
+		// Tab switch is a read-only display choice, no nonce needed.
+		if ( isset( $_GET['tab'] ) && 'tools' === $_GET['tab'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$tools = Utm_Attribution_Cleanup::view_data();
+			include UTM_ATTRIBUTION_ABSPATH . 'includes/admin/views/tools.php';
+			return;
+		}
+
 		$settings  = utm_attribution_get_settings();
 		$overrides = array(
 			'attribution_window_days' => has_filter( 'utm_attribution_cookie_lifetime_days' ),

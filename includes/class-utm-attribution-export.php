@@ -47,6 +47,9 @@ class Utm_Attribution_Export {
 			case 'campaigns':
 				$this->export_campaigns();
 				break;
+			case 'noise':
+				$this->export_noise();
+				break;
 			default:
 				wp_die( esc_html__( 'Invalid export type.', 'utm-attribution-for-woocommerce' ), 400 );
 		}
@@ -191,11 +194,27 @@ class Utm_Attribution_Export {
 	 * @param array  $rows     Array of arrays, each inner array is a row.
 	 */
 	private function output_csv( $filename, $headers, $rows ) {
-		$timestamp = gmdate( 'Y-m-d' );
-		$full_name = $filename . '-' . $timestamp . '.csv';
+		$output = $this->start_csv( $filename );
 
+		fputcsv( $output, $headers );
+
+		foreach ( $rows as $row ) {
+			fputcsv( $output, array_map( array( $this, 'escape_csv_cell' ), $row ) );
+		}
+
+		// ponytail: no fclose(), exit releases the php://output handle.
+		exit;
+	}
+
+	/**
+	 * Send the download headers and open the output stream.
+	 *
+	 * @param string $filename Base filename (without extension).
+	 * @return resource
+	 */
+	private function start_csv( $filename ) {
 		header( 'Content-Type: text/csv; charset=utf-8' );
-		header( 'Content-Disposition: attachment; filename=' . $full_name );
+		header( 'Content-Disposition: attachment; filename=' . $filename . '-' . gmdate( 'Y-m-d' ) . '.csv' );
 		header( 'Cache-Control: no-cache, no-store, must-revalidate' );
 		header( 'Pragma: no-cache' );
 		header( 'Expires: 0' );
@@ -203,13 +222,72 @@ class Utm_Attribution_Export {
 		// UTF-8 BOM for Excel compatibility.
 		echo "\xEF\xBB\xBF";
 
-		$output = fopen( 'php://output', 'w' );
+		return fopen( 'php://output', 'w' );
+	}
 
-		fputcsv( $output, $headers );
-
-		foreach ( $rows as $row ) {
-			fputcsv( $output, array_map( array( $this, 'escape_csv_cell' ), $row ) );
+	/**
+	 * Stream the visits the last Tools scan would delete, 5000 rows at a time. Never includes ip_hash.
+	 */
+	private function export_noise() {
+		$scan = Utm_Attribution_Cleanup::valid_scan();
+		if ( ! $scan ) {
+			wp_die( esc_html__( 'Settings or data changed. Please scan again.', 'utm-attribution-for-woocommerce' ), 409 );
 		}
+
+		global $wpdb;
+		$max_id = (int) $wpdb->get_var( "SELECT COALESCE( MAX( id ), 0 ) FROM {$wpdb->prefix}utm_attribution_visits" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		list( $start, $end ) = '' === $scan['from'] ? array( '', '' ) : Utm_Attribution_Reports::utc_bounds( $scan['from'], $scan['to'] );
+
+		$labels = Utm_Attribution_Cleanup::labels();
+		$output = $this->start_csv( 'utm-noise-visits' );
+
+		fputcsv(
+			$output,
+			array(
+				__( 'ID', 'utm-attribution-for-woocommerce' ),
+				__( 'Category', 'utm-attribution-for-woocommerce' ),
+				__( 'Visited At', 'utm-attribution-for-woocommerce' ),
+				__( 'Source', 'utm-attribution-for-woocommerce' ),
+				__( 'Medium', 'utm-attribution-for-woocommerce' ),
+				__( 'Campaign', 'utm-attribution-for-woocommerce' ),
+				__( 'Landing URL', 'utm-attribution-for-woocommerce' ),
+				__( 'Referrer', 'utm-attribution-for-woocommerce' ),
+				__( 'User Agent', 'utm-attribution-for-woocommerce' ),
+			)
+		);
+
+		$ctx    = array( 'anchors' => array(), 'users' => array() );
+		$cursor = 0;
+		do {
+			$rows = Utm_Attribution_Cleanup::fetch_rows( $cursor, $max_id, $start, $end, 5000 );
+			foreach ( Utm_Attribution_Cleanup::classify_rows( $rows, $ctx ) as $item ) {
+				if ( '' === $item['category'] || $item['protected'] ) {
+					continue;
+				}
+				$row = $item['row'];
+				fputcsv(
+					$output,
+					array_map(
+						array( $this, 'escape_csv_cell' ),
+						array(
+							$row['id'],
+							$labels[ $item['category'] ],
+							$this->format_date( $row['visited_at'] ),
+							(string) $row['utm_source'],
+							(string) $row['utm_medium'],
+							(string) $row['utm_campaign'],
+							(string) $row['landing_url'],
+							(string) $row['referrer'],
+							(string) $row['user_agent'],
+						)
+					)
+				);
+			}
+			if ( $rows ) {
+				$cursor = (int) end( $rows )['id'];
+			}
+		} while ( 5000 === count( $rows ) );
 
 		// ponytail: no fclose(), exit releases the php://output handle.
 		exit;

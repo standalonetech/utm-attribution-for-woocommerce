@@ -41,6 +41,39 @@
 			$('#utm-filter-form').submit();
 		});
 
+		// Confirm before the Visits bulk delete.
+		$('#utm-visits-form').on('submit', function(e) {
+			var action = $('#bulk-action-selector-top').val() !== '-1' ? $('#bulk-action-selector-top').val() : $('#bulk-action-selector-bottom').val();
+			if (action === 'delete' && $(this).find('input[name="visit[]"]:checked').length && !window.confirm($(this).data('confirm'))) {
+				e.preventDefault();
+			}
+		});
+
+		// Noise cleanup: enable Delete once confirmed, and poll the background job.
+		$('#utm-cleanup-confirm').on('change', function() {
+			$('#utm-cleanup-delete').prop('disabled', !this.checked);
+		});
+
+		var $progress = $('#utm-cleanup-progress');
+		if ($progress.length) {
+			var poll = function() {
+				$.post($progress.data('ajax'), { action: 'utm_attribution_cleanup_status', nonce: $progress.data('nonce') }, function(res) {
+					if (!res || !res.success) {
+						return;
+					}
+					if (res.data.status !== 'running') {
+						window.location.href = window.location.href.replace(/&utm_notice=[^&]*/, '');
+						return;
+					}
+					$progress.find('.utm-cleanup-bar span').css('width', res.data.percent + '%');
+					$progress.find('.utm-cleanup-pct').text(res.data.percent + '%');
+					$progress.find('.utm-cleanup-wait').text(res.data.idle > 120 ? $progress.data('waiting') : '');
+				});
+			};
+			setInterval(poll, 3000);
+			poll();
+		}
+
 		if (typeof utm_attribution_data === 'undefined') {
 			return;
 		}

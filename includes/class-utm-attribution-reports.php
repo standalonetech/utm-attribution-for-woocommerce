@@ -190,7 +190,7 @@ class Utm_Attribution_Reports {
 	 * @param string $to   YYYY-MM-DD, site time.
 	 * @return string[] [ start, end ] as UTC MySQL datetimes.
 	 */
-	private static function utc_bounds( $from, $to ) {
+	public static function utc_bounds( $from, $to ) {
 		return array( get_gmt_from_date( $from . ' 00:00:00' ), get_gmt_from_date( $to . ' 23:59:59' ) );
 	}
 }

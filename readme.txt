@@ -107,7 +107,9 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 == Changelog ==
 
 = 1.3.2 (Unreleased) =
-* Tweak - Development in progress.
+* New - Tools tab scans past visits for bots, monitors, non-page URLs, repeat visits and staff, lets you download them as CSV, and deletes them in the background.
+* New - Visits list has a Delete bulk action; visits linked to orders are never deleted.
+* New - Action utm_attribution_visits_deleted fires after visits are deleted.
 
 = 1.3.1 (October 2, 2026) =
 * New - Settings page under UTM Attribution for traffic filtering, internal domains, attribution window, user stitching, IP hashing and personal data retention.
@@ -162,7 +164,7 @@ Yes, use the `utm_attribution_conversion_order_statuses` filter:
 == Upgrade Notice ==
 
 = 1.3.2 =
-Development in progress.
+Clean up past bot visits: UTM Attribution → Settings → Tools scans, previews and removes them in the background. Visits linked to orders are never deleted.
 
 = 1.3.1 =
 Far fewer junk visits: uptime monitors, more bots, sitemap and /.well-known/ requests, staff and repeat cookieless visits are no longer recorded. New Settings page under UTM Attribution. Existing data is not changed.
